@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/layout_border" >
+        <TextView
+        android:id="@+id/uuid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       
+        android:layout_marginLeft="21dp"
+        android:text="Medium Text"
+        android:layout_marginTop="30dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" /> 
+        <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/uuid"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:text="Dell Laptop"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+         
+         <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="Location 2nd floor, Drishya"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+         
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/assetowner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/relativeLayout1"
+        android:layout_below="@+id/relativeLayout1"
+        android:layout_marginTop="27dp"
+        android:text="Asset Owner"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#B1BCBE" />
+
+    <TextView
+        android:id="@+id/ownername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/assetowner"
+        android:layout_below="@+id/assetowner"
+        android:layout_marginTop="14dp"
+        android:text="John Doe"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+  <ImageView
+      android:id="@+id/propic"
+      android:layout_width="70dp"
+      android:layout_height="70dp"
+      android:layout_alignRight="@+id/relativeLayout1"
+      android:layout_alignTop="@+id/assetowner"
+      android:layout_marginRight="17dp"
+      android:src="@drawable/pro_pic" />
+
+  <TextView
+      android:id="@+id/movhis"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignLeft="@+id/relativeLayout2"
+      android:layout_below="@+id/propic"
+      android:layout_marginTop="20dp"
+      android:text="Movement history"
+      android:textAppearance="?android:attr/textAppearanceMedium"
+      android:textColor="#B1BCBE" />
+
+  <RelativeLayout
+      android:id="@+id/relativeLayout2"
+      android:layout_width="fill_parent"
+      android:layout_height="100dp"
+      
+      android:layout_below="@+id/movhis"
+      android:layout_marginTop="10dp"
+       android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+      android:background="@drawable/layout_border" >
+
+      <TextView
+          android:id="@+id/time1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentTop="true"
+          android:layout_centerHorizontal="true"
+          android:layout_marginTop="17dp"
+          android:text="April 12 4:30 pm  Moved to conference room1"
+          android:textAppearance="?android:attr/textAppearanceSmall" />
+
+      <TextView
+          android:id="@+id/time3"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignLeft="@+id/time2"
+          android:layout_below="@+id/time2"
+          android:text="April 12 5:50 pm Moved to Conference Hall"
+          android:textAppearance="?android:attr/textAppearanceSmall" />
+
+      <TextView
+          android:id="@+id/time2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignLeft="@+id/time1"
+          android:layout_below="@+id/time1"
+          android:text="April 12 4:40 pm Moved to Huddle room3"
+          android:textAppearance="?android:attr/textAppearanceSmall" />
+
+  </RelativeLayout>
+  
+  </RelativeLayout>
+

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="350dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+       android:layout_marginTop="44dp"
+        
+        android:background="@drawable/layout_border" >
+        <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+     
+       android:layout_centerHorizontal="true"
+       android:layout_centerVertical="true"
+        android:text="no assets" />
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" >
+        </ListView>
+
+    </RelativeLayout>
+
+ 
+
+   
+
+      <HorizontalScrollView
+          android:id="@+id/horizontalScrollView1"
+          android:layout_width="fill_parent"
+          android:layout_height="50dp"
+               android:layout_alignParentBottom="true"
+                android:background="#7f8c8d"
+          >
+
+          <RelativeLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal" >
+               <TextView
+        android:id="@+id/openpdf"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+    android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        
+        android:background="#1569C7"
+        android:clickable="true"
+        android:onClick="open"
+        android:paddingBottom="15dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="15dp"
+        android:text="open directory"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+       />
+       <TextView
+        android:id="@+id/exportpdf"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+         android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/openpdf"
+        android:background="#1569C7"
+        android:layout_marginLeft="2dp"
+        android:clickable="true"
+        android:onClick="export"
+        android:paddingBottom="15dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="15dp"
+        android:text="export as pdf"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+       />
+      <TextView
+        android:id="@+id/rescan"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/exportpdf"
+        android:background="#1569C7"
+        android:clickable="true"
+        android:onClick="rescan"
+        android:paddingBottom="15dp"
+        android:layout_marginLeft="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="8dp"
+        android:paddingTop="15dp"
+        android:text="clear and rescan"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+       />
+      </RelativeLayout>
+      </HorizontalScrollView>
+
+      <TextView
+          android:id="@+id/textView3"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+         
+          android:layout_below="@+id/relativeLayout1"
+         
+          android:layout_marginTop="20dp"
+          android:layout_centerHorizontal="true"
+          android:text="* tap an asset for more info"
+          android:textAppearance="?android:attr/textAppearanceSmall" />
+
+      <TextView
+          android:id="@+id/textView1"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentLeft="true"
+          android:layout_alignParentTop="true"
+          
+          android:paddingBottom="5dp"
+          android:paddingLeft="10dp"
+          android:paddingRight="10dp"
+          android:paddingTop="5dp"
+          android:text="Medium Text"
+          android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>
