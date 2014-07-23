@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+android:layout_height="260dp"
+android:id="@+id/profile"
+android:background="#3779be">
+
+         <TextView
+             android:id="@+id/idName"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_below="@+id/idImage"
+             android:layout_centerHorizontal="true"
+             android:layout_marginTop="15dp"
+             android:text=" "
+             android:textColor="#fff"
+             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+         <TextView
+             android:id="@+id/idAssetTitle"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_alignParentBottom="true"
+             android:layout_alignParentLeft="true"
+             android:layout_marginBottom="22dp"
+             android:layout_marginLeft="14dp"
+             android:textColor="#fff"
+             android:visibility="invisible"
+             android:text="Assets"
+             android:clickable="true"
+             android:onClick="moveTab"
+             android:textAppearance="?android:attr/textAppearanceSmall" />
+
+         <TextView
+             android:id="@+id/idAssetCount"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_above="@+id/idAssetTitle"
+             android:layout_alignLeft="@+id/idAssetTitle"
+             android:textColor="#fff"
+             android:text="30"
+             android:onClick="moveTab"
+             android:clickable="true"
+             android:visibility="invisible"
+             android:textAppearance="?android:attr/textAppearanceLarge" />
+
+         <ImageView
+             android:id="@+id/idImage"
+             android:layout_width="100dp"
+             android:layout_height="100dp"
+             android:layout_alignParentTop="true"
+             android:layout_centerHorizontal="true"
+             android:layout_marginTop="44dp"
+             android:background="@drawable/profile_back"
+             android:src="@drawable/abc_ab_transparent_light_holo" />
+
+</RelativeLayout>
+
+   <android.support.v4.view.ViewPager
+    android:id="@+id/pager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_below="@id/profile" >
+</android.support.v4.view.ViewPager>
+  
+</RelativeLayout>

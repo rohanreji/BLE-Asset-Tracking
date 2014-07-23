@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fff" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+    	
+        android:visibility="invisible"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+         >
+
+        <RelativeLayout
+            android:id="@+id/top1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/ind_back"
+            android:paddingBottom="5dp"
+            
+            android:paddingTop="3dp" >
+
+            <TextView
+                android:id="@+id/idtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="id :  "
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textStyle="bold"
+                android:textColor="#3779be" />
+
+            <TextView
+                android:id="@+id/idnum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/idtitle"
+                android:layout_alignBottom="@+id/idtitle"
+                android:layout_toRightOf="@+id/idtitle"
+                android:text="Ey1290"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/top2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top1"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/ind_back"
+            android:paddingBottom="5dp"
+          
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/phonetitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="phone :  "
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+            <TextView
+                android:id="@+id/phonenum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/phonetitle"
+                android:layout_alignBottom="@+id/phonetitle"
+                android:layout_toRightOf="@+id/phonetitle"
+                android:text="8547242171"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/top3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top2"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/ind_back"
+            android:paddingBottom="5dp"
+            
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/emailtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="email :  "
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+            <TextView
+                android:id="@+id/emailid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/emailtitle"
+                android:layout_alignBottom="@+id/emailtitle"
+                android:layout_toRightOf="@+id/emailtitle"
+                android:text="nprajilesh@gmail.com"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/top4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top3"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="3dp"
+            
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/desigtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="designation :  "
+                
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+            <TextView
+                android:id="@+id/designum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/desigtitle"
+                android:layout_alignBottom="@+id/desigtitle"
+                android:layout_toRightOf="@+id/desigtitle"
+                android:text="Lm345"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#3779be" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/notdetect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/relativeLayout1"
+        android:layout_centerHorizontal="true"
+        android:text="*no details"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#3779be" />
+
+</RelativeLayout>
