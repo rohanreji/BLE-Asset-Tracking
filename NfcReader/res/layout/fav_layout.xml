@@ -2,26 +2,36 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-      <TextView
-                 android:id="@+id/listhead"
+    <RelativeLayout
+        
+        android:id="@+id/rellay"
                  android:layout_width="fill_parent"
                  android:layout_height="wrap_content"
                  android:layout_alignParentTop="true"
-                 android:layout_centerHorizontal="true"
+                 
+                   android:background="#3498db" >
+      <TextView
+                 android:id="@+id/listhead"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                  android:textColor="#fff"
                  android:text="Asset List"
                   android:textAlignment="center"
                   android:gravity="center"
                   android:paddingTop="20dp"
                   android:paddingBottom="20dp"
-                 android:background="#3498db"
+               
                   android:textAppearance="?android:attr/textAppearanceMedium"/>
+       
+       </RelativeLayout>
   <ListView
         android:id="@+id/listView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-       android:layout_below="@+id/listhead" >
+       android:layout_below="@+id/rellay" >
     </ListView>
              
 </RelativeLayout>
