@@ -1,11 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-          android:orientation="vertical"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
-  <TextView android:id="@+id/ble_name"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textSize="24dp"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:paddingLeft="10dp"
+    android:background="#ecf0f1"
+    android:paddingRight="10dp" >
+ 
+    <!-- Name Label -->
+ 
+  
+ 
+    <!-- Email label -->
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/mobile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="prayer "
+         android:textSize="16sp"
+       
+        android:textStyle="bold" />
+               <TextView
+        android:id="@+id/name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="2dip"
+        android:paddingTop="6dip"
+       android:layout_below="@id/mobile"
+        android:textSize="16sp"
+        android:text="time"
+        android:textColor="#7f8c8d"
+        android:textStyle="bold" />
+ 
+    <!-- Mobile number label -->
+
+               <TextView
+                   android:id="@+id/delivery"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignBottom="@+id/name"
+                   android:layout_alignRight="@+id/name"
+                   android:text="sorry"
+                   android:textColor="#7f8c8d"
+                    android:textSize="16sp"
+                   android:textAppearance="?android:attr/textAppearanceMedium" />
+ 
+</RelativeLayout>
