@@ -177,7 +177,7 @@ import android.widget.Toast;
     	AlertDialog.Builder alert=new AlertDialog.Builder(this);
     	alert.setTitle("Set Server");
     	alert.setView(e);
-    	e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/attendance/pushtodb"));
+    	e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/"));
     	alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
     		public void onClick(DialogInterface dialog, int whichButton) {
     			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("MYIP",e.getText().toString()).commit();
@@ -286,7 +286,8 @@ import android.widget.Toast;
                location.put("deviceid", mngr.getDeviceId());
               
                 HttpClient httpclient = new DefaultHttpClient();
-                final String JEDIS_SERVER1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/attendance/pushtodb");
+                String JEDIS_SERVER1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/");
+                JEDIS_SERVER1=JEDIS_SERVER1+"attendance/pushtodb";
                 URL url = new URL(JEDIS_SERVER1);
                 HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
                 String json = "";
