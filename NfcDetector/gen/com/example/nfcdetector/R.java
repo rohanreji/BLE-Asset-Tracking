@@ -35,6 +35,7 @@ public final class R {
         public static final int editText1=0x7f09000a;
         public static final int editText2=0x7f090009;
         public static final int imageView1=0x7f090003;
+        public static final int logout=0x7f09000f;
         public static final int mobile=0x7f090006;
         public static final int name=0x7f090007;
         public static final int relativeLayout1=0x7f09000b;

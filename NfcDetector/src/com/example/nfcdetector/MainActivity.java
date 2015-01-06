@@ -407,6 +407,12 @@ import android.widget.Toast;
         	ddemo();
             return true;
         }
+        if (id == R.id.logout) {
+        	PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("TOKEN","ZERO").commit();
+			
+        	setContentView(R.layout.login_page);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
     
@@ -902,13 +908,13 @@ import android.widget.Toast;
     		if(result.equals("sorry"))
     		{
     			
-					Toast.makeText(getApplicationContext(), obj.getString("status"),Toast.LENGTH_SHORT).show();
+				//	Toast.makeText(getApplicationContext(), obj.getString("status"),Toast.LENGTH_SHORT).show();
 				
     		}
     		else
     		{
     			
-					Toast.makeText(getApplicationContext(), obj.getString("token"),Toast.LENGTH_SHORT).show();
+				//	Toast.makeText(getApplicationContext(), obj.getString("token"),Toast.LENGTH_SHORT).show();
 					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("TOKEN",obj.getString("token")).commit();
 					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("USERNAME",obj.getJSONObject("user").getString("username")).commit();
 					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("COMPANY",obj.getJSONObject("user").getString("CompanyId")).commit();
@@ -1002,7 +1008,9 @@ import android.widget.Toast;
     
     
     
-    
+    /*
+     * to map device to worksite
+     */
     
     
     
