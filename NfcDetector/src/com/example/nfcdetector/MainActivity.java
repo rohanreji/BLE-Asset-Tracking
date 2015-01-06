@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -20,6 +21,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -46,7 +48,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.nfc.NdefMessage;
@@ -70,6 +81,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -85,7 +97,10 @@ import android.widget.Toast;
 	int back_flag=0;
 	int first_use;
 	boolean active;
+	TextView t3,t4;
 	JSONArray contacts = null,contacts1=null;
+	JSONArray[] worksites;
+	JSONArray wsites;
 	//stroes both id and name for projects
 	ArrayList<HashMap<String, String>> contactList,contactList1;
 	//to load first spinner
@@ -97,7 +112,22 @@ import android.widget.Toast;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","ZERO").equals("ZERO"))
+        {
+        	setContentView(R.layout.login_page);
+        }
+        else{
         setContentView(R.layout.activity_main);
+        DatabaseHandler db = new DatabaseHandler(this);
+        
+        /**
+         * CRUD Operations
+         * */
+        // Inserting Contacts
+        Log.d("Insert: ", "Inserting ..");
+        db.addContact(new EmpDetails(12,"Ravi", "9100000000",45,"dsfsdf"));       
+        
+         
         back_flag=0;
         contactList = new ArrayList<HashMap<String, String>>();
         contactList1 = new ArrayList<HashMap<String, String>>();
@@ -120,6 +150,10 @@ import android.widget.Toast;
 		t.setTypeface(font);
 		TextView t2=(TextView)findViewById(R.id.textView2);
 		t2.setTypeface(font);
+		t3=(TextView)findViewById(R.id.textView3);
+		t3.setTypeface(font);
+		t4=(TextView)findViewById(R.id.textView4);
+		t4.setTypeface(font);
 		/*
 		 * perform on background
 		 */
@@ -129,28 +163,30 @@ import android.widget.Toast;
         	Tag tagFromIntent = this.getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
         	Log.d(TAG, "UID: " + bin2hex(tagFromIntent.getId()));
          	tagid=bin2hex(tagFromIntent.getId());
-         	t.setText("Tag: "+tagid);
-         	t.setTextColor(Color.parseColor("#2c3e50"));
+         	t4.setText("Tag: "+tagid);
+         	t4.setTextColor(Color.parseColor("#2c3e50"));
+         	
          	UploadASyncTask upload = new UploadASyncTask();
             upload.execute();
+            profilesetter();
         			
 		}
-	
+        }
 	}
 	//commented for testing
-    @SuppressLint("NewApi") public void enableForegroundMode() {
-    	Log.d(TAG, "enableForegroundMode");
-
-    	IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
-    	IntentFilter[] writeTagFilters = new IntentFilter[] {tagDetected};
-    	nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, writeTagFilters, null);
-    }
-
-    @SuppressLint("NewApi") public void disableForegroundMode() {
-    	Log.d(TAG, "disableForegroundMode");
-
-    	nfcAdapter.disableForegroundDispatch(this);
-    }
+//    @SuppressLint("NewApi") public void enableForegroundMode() {
+//    	Log.d(TAG, "enableForegroundMode");
+//
+//    	IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
+//    	IntentFilter[] writeTagFilters = new IntentFilter[] {tagDetected};
+//    	nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, writeTagFilters, null);
+//    }
+//
+//    @SuppressLint("NewApi") public void disableForegroundMode() {
+//    	Log.d(TAG, "disableForegroundMode");
+//
+//    	nfcAdapter.disableForegroundDispatch(this);
+//    }
 
 
     @Override
@@ -178,7 +214,12 @@ import android.widget.Toast;
     	Log.d(TAG, "onNewIntent");
     	back_flag=0;
 
-    	if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {		
+    	if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {	
+    		if(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","ZERO").equals("ZERO"))
+            {
+            	setContentView(R.layout.login_page);
+            }
+            else{
 			in=intent;
 						 
 			Tag tagFromIntent = in.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -186,29 +227,27 @@ import android.widget.Toast;
    
 		
 			tagid=bin2hex(tagFromIntent.getId());
-       		t.setText("Tag: "+tagid);
-       		t.setTextColor(Color.parseColor("#2c3e50"));
-       		
+       		t4.setText("Tag: "+tagid);
+       		t4.setTextColor(Color.parseColor("#2c3e50"));
+       	
        		UploadASyncTask upload = new UploadASyncTask();
        		upload.execute();
+       		profilesetter();
 			
-    	} else {
+    	} 
+    	}
+    	else {
     		Toast.makeText(getApplicationContext(),"No Tag Discovered", Toast.LENGTH_SHORT).show();
 		}
     }
-
-   /*
-    * called on button click - fro testing
-    */
-    public void clickme(View v)
+//called on login button press
+    public void login(View v)
     {
-    	tagid="C74AA7D6";
-    	t.setText("Tag: "+tagid);
-   		t.setTextColor(Color.parseColor("#2c3e50"));
-   		
-   		UploadASyncTask upload = new UploadASyncTask();
-   		upload.execute();
+    	new LoginTask().execute();
+    	
     }
+    
+  
     static String bin2hex(byte[] data) {
     	return String.format("%0" + (data.length * 2) + "X", new BigInteger(1,data));
     }
@@ -258,7 +297,7 @@ import android.widget.Toast;
              	AlertDialog.Builder alert=new AlertDialog.Builder(MainActivity.this);
              	alert.setTitle("Set Server");
              	alert.setView(e);
-             	e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/"));
+             	e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:"));
              	alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
              		public void onClick(DialogInterface dialog, int whichButton) {
              			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("MYIP",e.getText().toString()).commit();
@@ -302,7 +341,7 @@ import android.widget.Toast;
 
     	super.onResume();
     	//commented for testing
-    	enableForegroundMode();
+    	//enableForegroundMode();
     }
 
     @Override	
@@ -311,11 +350,45 @@ import android.widget.Toast;
 
     	super.onPause();
     	//commented for testing
-    	disableForegroundMode();
+    	//disableForegroundMode();
     }
-
+    public void profilesetter()
+    {
+    	ImageView im=(ImageView)findViewById(R.id.imageView1);
+    	//code for fetching the contents from the offline sqlite database 
+    	   
+        DatabaseHandler db = new DatabaseHandler(this);
+    	List<EmpDetails> contacts = db.getAllContacts();      
+    	String url="http://organicthemes.com/demo/profile/files/2012/12/profile_img.png";
+        for (EmpDetails cn : contacts) {
+          
+        
+    	
+    	
+    	
+    	String name=cn.getName();
+    	 String siteid=PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAME","HQPP00931");
+    	 
+    	 t.setText(name);
+    	 t3.setText(siteid+", "+"Qatar Projects");
+    	 t.setTextColor(Color.parseColor("#2c3e50"));
+    	 t3.setTextColor(Color.parseColor("#2c3e50"));
+        }
+//    	 
+    	 new ImageDownloader(im).execute(url);
+    }
     
-
+	public void clicks(View v)
+	{
+		tagid="702F11E9";
+		t4.setText("Tag: "+tagid);
+    	t4.setTextColor(Color.parseColor("#2c3e50"));
+   		
+   		UploadASyncTask upload = new UploadASyncTask();
+   		upload.execute();
+   		profilesetter();
+	
+	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -390,8 +463,8 @@ import android.widget.Toast;
                location.put("projcode", siteid);
               
                 HttpClient httpclient = new DefaultHttpClient();
-                String JEDIS_SERVER1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/");
-                JEDIS_SERVER1=JEDIS_SERVER1+"attendance/pushtodb";
+                String JEDIS_SERVER1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+                JEDIS_SERVER1=JEDIS_SERVER1+"1337/attendance/pushtodb";
                 URL url = new URL(JEDIS_SERVER1);
                 HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
                 String json = "";
@@ -406,7 +479,7 @@ import android.widget.Toast;
 
                 HttpResponse response = httpclient.execute(httpPost);
                 HttpEntity entity = response.getEntity();
-
+                
                 String jsonString = EntityUtils.toString(entity);
                 Log.d("rear", jsonString);
                 if(jsonString.equals("Not Found"))
@@ -455,8 +528,18 @@ import android.widget.Toast;
             contactList = new ArrayList<HashMap<String, String>>();
             Loclist=new ArrayList<String>(); 
             //String url="http://127.prayer.php";
-            String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/");
-            url=url+"locations";
+            String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+            url=url+"3000/api/v1/company/findallworksites/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("COMPANY","NULL");
+            url += "?";
+            List<NameValuePair> params = new LinkedList<NameValuePair>();
+
+            
+                params.add(new BasicNameValuePair("access_token", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","NULL")));
+                params.add(new BasicNameValuePair("x_key", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USERNAME","NULL")));
+                String paramString = URLEncodedUtils.format(params, "utf-8");
+
+                url += paramString;
+                
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
  
@@ -468,14 +551,17 @@ import android.widget.Toast;
                      
                     // Getting JSON Array node
                     contacts = new JSONArray(jsonStr);
- 
+                    worksites=new JSONArray[contacts.length()];
                     // looping through All Contacts
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
                          
                         String id = c.getString("id");
                         String loc = c.getString("name");
+                        worksites[i]=c.getJSONArray("Worksites");
+                        
                       System.out.println("name:  "+loc);
+                      
  
                         // tmp hashmap for single contact
                         HashMap<String, String> contact = new HashMap<String, String>();
@@ -522,6 +608,7 @@ import android.widget.Toast;
         	// TODO Auto-generated method stub
         	// Locate the textviews in activity_main.xml
         		Locposition=Integer.parseInt(contactList.get(position).get("id"));
+        		wsites=worksites[position];
         		System.out.println("id is:"+Locposition);
         	}
         	 
@@ -587,47 +674,91 @@ import android.widget.Toast;
         @Override
         protected Void doInBackground(Void... arg0) {
             // Creating service handler class instance
-            ServiceHandler sh = new ServiceHandler();
-            String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/");
-            url=url+"locations/getAllProjects/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("PROJECT_CODE",0);
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
- 
-            Log.d("Response: ", "> " + jsonStr);
- 
-            if (jsonStr != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-                     
-                    // Getting JSON Array node
-                    contacts1 = jsonObj.getJSONArray("data");
- 
-                    // looping through All Contacts
-                    for (int i = 0; i < contacts1.length(); i++) {
-                        JSONObject c = contacts1.getJSONObject(i);
-                         
-                        String id = c.getString("location");
-                        String loc = c.getString("code");
-                      System.out.println("name:  "+loc);
- 
-                        // tmp hashmap for single contact
-                        HashMap<String, String> contact = new HashMap<String, String>();
- 
-                        // adding each child node to HashMap key => value
-                        contact.put("location", id);
-                        contact.put("code", loc);
-                       
- 
-                        // adding contact to contact list
-                        contactList1.add(contact);
-                        Sitelist.add(loc);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
-            }
+        	
+        	//for an older version 
+        	
+//            ServiceHandler sh = new ServiceHandler();
+//            String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+//            url=url+"3000/api/v1/company/findallworksites/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("PROJECT_CODE",0);
+//            url += "?";
+//            List<NameValuePair> params = new LinkedList<NameValuePair>();
+//
+//            
+//                params.add(new BasicNameValuePair("access_token", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","NULL")));
+//                params.add(new BasicNameValuePair("x_key", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USERNAME","NULL")));
+//                String paramString = URLEncodedUtils.format(params, "utf-8");
+//
+//                url += paramString;
+//            
+//            // Making a request to url and getting response
+//            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
+// 
+//            Log.d("Response: ", "> " + jsonStr);
+// 
+//            if (jsonStr != null) {
+//                try {
+//                    JSONObject jsonObj = new JSONObject(jsonStr);
+//                     
+//                    // Getting JSON Array node
+//                  //  contacts1 = jsonObj.getJSONArray("data");
+//                    contacts1 = new JSONArray(jsonStr);
+//                    // looping through All Contacts
+//                    for (int i = 0; i < contacts1.length(); i++) {
+//                        JSONObject c = contacts1.getJSONObject(i);
+//                         
+//                        String id = c.getString("location");
+//                        String loc = c.getString("code");
+//                      System.out.println("name:  "+loc);
+// 
+//                        // tmp hashmap for single contact
+//                        HashMap<String, String> contact = new HashMap<String, String>();
+// 
+//                        // adding each child node to HashMap key => value
+//                        contact.put("location", id);
+//                        contact.put("code", loc);
+//                       
+// 
+//                        // adding contact to contact list
+//                        contactList1.add(contact);
+//                        Sitelist.add(loc);
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            } else {
+//                Log.e("ServiceHandler", "Couldn't get any data from the url");
+        	
+        	
+//            }
+        	
+        	
+        	try{
+        	
+        		 Sitelist=new ArrayList<String>();
+        	 for (int i = 0; i < wsites.length(); i++) {
+               JSONObject c = wsites.getJSONObject(i);
+                
+               String id = c.getString("id");
+               String loc = c.getString("projcode");
+             System.out.println("name:  "+loc);
+
+               // tmp hashmap for single contact
+               HashMap<String, String> contact = new HashMap<String, String>();
+
+               // adding each child node to HashMap key => value
+               contact.put("id", id);
+               contact.put("projcode", loc);
+              
+
+               // adding contact to contact list
+               contactList1.add(contact);
+               Sitelist.add(loc);
+           }
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
  
             return null;
         }
@@ -652,8 +783,8 @@ import android.widget.Toast;
         	View arg1, int position, long arg3) {
         	// TODO Auto-generated method stub
         	// Locate the textviews in activity_main.xml
-        		Siteposition=Integer.parseInt(contactList1.get(position).get("location"));
-        		nam=contactList1.get(position).get("code");
+        		Siteposition=Integer.parseInt(contactList1.get(position).get("id"));
+        		nam=contactList1.get(position).get("projcode");
         		System.out.println("site code in shared: "+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("SITE_CODE",0));
         	}
         	 
@@ -694,8 +825,167 @@ import android.widget.Toast;
     
     
     
+    class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
+    	  ImageView bmImage;
+    	  String err;
+    	  Bitmap bmp ;
+    	  public ImageDownloader(ImageView bmImage) {
+    	      this.bmImage = bmImage;
+    	  }
+
+    	  protected Bitmap doInBackground(String... urls) {
+    			URL url;
+    			try {
+    				url = new URL(urls[0]);
+    			
+    	    	bmp= BitmapFactory.decodeStream(url.openConnection().getInputStream());
+    	    	bmp=getRoundedCornerBitmap(bmp, 120);
+    			} catch (Exception e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			}
+    	      return bmp;
+    	  }
+
+    	  protected void onPostExecute(Bitmap result) {
+    		 
+    		  bmImage.setImageBitmap(result);
+    		  
+    		 	
+    		//	  bmImage.setImageResource(R.drawable.propic);
+    		  
+    	  }
+    	  public Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+    	        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+    	                .getHeight(), Config.ARGB_8888);
+    	        Canvas canvas = new Canvas(output);
+
+    	        final int color = 0xff424242;
+    	        final Paint paint = new Paint();
+    	        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+    	        final RectF rectF = new RectF(rect);
+    	        final float roundPx = pixels;
+
+    	        paint.setAntiAlias(true);
+    	        canvas.drawARGB(0, 0, 0, 0);
+    	        paint.setColor(color);
+    	        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+    	        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+    	        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+    	        return output;
+    	    }
+    	}
     
     
+    
+  
+    
+    
+    
+    /*
+     * Login Asynctask
+     */
+    String jsonString1;
+    private class LoginTask extends AsyncTask<Void,Void, String>{
+
+    	@Override
+    	protected void onPostExecute(String result) {
+    		// TODO Auto-generated method stub
+    		super.onPostExecute(result);
+    		try {
+    		JSONObject obj;
+			
+				obj = new JSONObject(jsonString1);
+			
+    		if(result.equals("sorry"))
+    		{
+    			
+					Toast.makeText(getApplicationContext(), obj.getString("status"),Toast.LENGTH_SHORT).show();
+				
+    		}
+    		else
+    		{
+    			
+					Toast.makeText(getApplicationContext(), obj.getString("token"),Toast.LENGTH_SHORT).show();
+					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("TOKEN",obj.getString("token")).commit();
+					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("USERNAME",obj.getJSONObject("user").getString("username")).commit();
+					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("COMPANY",obj.getJSONObject("user").getString("CompanyId")).commit();
+
+					setContentView(R.layout.activity_main);
+					  first_use=PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("FIRST_USE",0);
+				        if(first_use==0)
+				        {
+				        	firstusecall();
+				        }
+				
+    		}
+    		}catch(Exception e)
+    		{
+    			
+    		}
+    		
+    		if (pDialog.isShowing())
+   			pDialog.dismiss();
+    		
+    	}
+
+    	@Override
+    	protected void onPreExecute() {
+    		// TODO Auto-generated method stub
+    		super.onPreExecute();
+    		pDialog = new ProgressDialog(MainActivity.this);
+    		pDialog.setMessage("Please wait...");
+    		pDialog.setCancelable(false);
+         	pDialog.show();
+    	}
+
+    	@Override
+    	protected String doInBackground(Void... params) {
+            try{
+            
+               TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE); 
+               JSONObject location = new JSONObject();
+               EditText uname=(EditText)findViewById(R.id.editText1);
+               EditText pass=(EditText)findViewById(R.id.editText2);
+               location.put("username", uname.getText().toString());
+               location.put("password", pass.getText().toString());
+               
+              
+                HttpClient httpclient = new DefaultHttpClient();
+                String JEDIS_SERVER1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+                JEDIS_SERVER1=JEDIS_SERVER1+"3000/auth/login";
+                URL url = new URL(JEDIS_SERVER1);
+                HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
+                String json = "";
+                json = location.toString();
+                StringEntity se = new StringEntity(json);
+                se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                httpPost.setEntity(se);
+
+                httpPost.setHeader("User-Agent", "NFC-DETECTOR/1.0");
+                httpPost.setHeader("Accept", "application/json");
+                httpPost.setHeader("Content-type", "application/json");
+
+                HttpResponse response = httpclient.execute(httpPost);
+                HttpEntity entity = response.getEntity();
+
+                jsonString1 = EntityUtils.toString(entity);
+                Log.d("rear", jsonString1);
+                if(jsonString1.equals("Not Found"))
+                {
+                	 return "sorry";
+                }
+                else
+                	return "true";
+            }catch(Exception e){
+                Log.e("ERROR IN LOGIN", e.getMessage());
+                return "sorry";
+           }
+            
+        }
+    }    
     
     
  }
