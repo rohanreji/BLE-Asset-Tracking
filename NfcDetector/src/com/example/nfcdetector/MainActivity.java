@@ -803,7 +803,7 @@ import android.widget.Toast;
         			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putInt("FIRST_USE",1).commit();
         			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("SITE_NAME",nam).commit();
         			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putInt("SITE_CODE",Siteposition).commit();
-        			
+        			new MapId().execute();
         			dialog.cancel();
         			
         		}
@@ -987,6 +987,101 @@ import android.widget.Toast;
         }
     }    
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private class MapId extends AsyncTask<Void,Void, String>{
+
+    	@Override
+    	protected void onPostExecute(String result) {
+    		// TODO Auto-generated method stub
+    		super.onPostExecute(result);
+    		
+    		
+    	}
+
+    	@Override
+    	protected void onPreExecute() {
+    		// TODO Auto-generated method stub
+    		super.onPreExecute();
+    		
+    	}
+
+    	@Override
+    	protected String doInBackground(Void... params) {
+    		
+    		 try{
+    	            
+                 TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE); 
+                 JSONObject location = new JSONObject();
+               
+               
+                 location.put("deviceid", mngr.getDeviceId());
+                 int siteid=PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("SITE_CODE",1);
+                 location.put("projcode", siteid);
+                
+                  HttpClient httpclient = new DefaultHttpClient();
+                  String JEDIS_SERVER1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+                  JEDIS_SERVER1=JEDIS_SERVER1+"3000/api/v1/device/addmap";
+                  
+                  JEDIS_SERVER1 += "?";
+                  List<NameValuePair> params1 = new LinkedList<NameValuePair>();
+
+                  
+                      params1.add(new BasicNameValuePair("access_token", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","NULL")));
+                      params1.add(new BasicNameValuePair("x_key", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USERNAME","NULL")));
+                      String paramString = URLEncodedUtils.format(params1, "utf-8");
+
+                      JEDIS_SERVER1 += paramString;
+                  
+                  URL url = new URL(JEDIS_SERVER1);
+                  
+                
+                  HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
+                  String json = "";
+                  json = location.toString();
+                  StringEntity se = new StringEntity(json);
+                  se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+                  httpPost.setEntity(se);
+
+                  httpPost.setHeader("User-Agent", "NFC-DETECTOR/1.0");
+                  httpPost.setHeader("Accept", "application/json");
+                  httpPost.setHeader("Content-type", "application/json");
+
+                  HttpResponse response = httpclient.execute(httpPost);
+                  HttpEntity entity = response.getEntity();
+                  
+                  String jsonString = EntityUtils.toString(entity);
+                  Log.d("rear", jsonString);
+                  if(jsonString.equals("Not Found"))
+                  {
+                  	 return "sorry";
+                  }
+                  else
+                  	return "true";
+              }catch(Exception e){
+                  Log.e("ERROR IN SEVER UPLOAD", e.getMessage());
+                  return "sorry";
+             }
+            
+        }
+    }    
     
  }
 
