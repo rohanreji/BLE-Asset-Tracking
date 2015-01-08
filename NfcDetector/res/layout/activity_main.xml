@@ -31,16 +31,6 @@
          android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:text="test" 
-        android:background="#ecf0f1"
-        android:onClick="clicks"/>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="120dp"
@@ -68,5 +58,25 @@
         android:layout_centerHorizontal="true"
         android:text=" "
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:onClick="synced"
+        android:src="@drawable/sync" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="15dp"
+        android:background="#ecf0f1"
+        android:onClick="clicks"
+        android:text="test" />
 
 </RelativeLayout>

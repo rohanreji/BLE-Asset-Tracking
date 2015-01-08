@@ -92,6 +92,7 @@ import android.widget.Toast;
 	protected PendingIntent nfcPendingIntent;
 	String tagid;
 	Intent in;
+	int del=0;
 	TextView t;
 	String nam;
 	int back_flag=0;
@@ -112,6 +113,13 @@ import android.widget.Toast;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        back_flag=0;
+        contactList = new ArrayList<HashMap<String, String>>();
+        contactList1 = new ArrayList<HashMap<String, String>>();
+        Loclist=new ArrayList<String>();
+        Sitelist=new ArrayList<String>();
+        Locposition=0;
+        Siteposition=0;
         if(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","ZERO").equals("ZERO"))
         {
         	setContentView(R.layout.login_page);
@@ -127,14 +135,8 @@ import android.widget.Toast;
         Log.d("Insert: ", "Inserting ..");
         db.addContact(new EmpDetails(12,"Ravi", "9100000000",45,"dsfsdf"));       
         
-         
-        back_flag=0;
-        contactList = new ArrayList<HashMap<String, String>>();
-        contactList1 = new ArrayList<HashMap<String, String>>();
-        Loclist=new ArrayList<String>();
-        Sitelist=new ArrayList<String>();
-        Locposition=0;
-        Siteposition=0;
+         db.close();
+       
         first_use=PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("FIRST_USE",0);
         if(first_use==0)
         {
@@ -166,9 +168,13 @@ import android.widget.Toast;
          	t4.setText("Tag: "+tagid);
          	t4.setTextColor(Color.parseColor("#2c3e50"));
          	
-         	UploadASyncTask upload = new UploadASyncTask();
-            upload.execute();
-            profilesetter();
+//         	UploadASyncTask upload = new UploadASyncTask();
+//            upload.execute();
+//above two line or
+       		
+   			new JedisThread().execute();
+        //    profilesetter();
+ 	
         			
 		}
         }
@@ -230,9 +236,15 @@ import android.widget.Toast;
        		t4.setText("Tag: "+tagid);
        		t4.setTextColor(Color.parseColor("#2c3e50"));
        	
-       		UploadASyncTask upload = new UploadASyncTask();
-       		upload.execute();
-       		profilesetter();
+//       		UploadASyncTask upload = new UploadASyncTask();
+//       		upload.execute();
+       		
+       	//above two line or
+       		
+   			new JedisThread().execute();
+       		
+
+       		//profilesetter();
 			
     	} 
     	}
@@ -246,8 +258,15 @@ import android.widget.Toast;
     	new LoginTask().execute();
     	
     }
+    public void sync_emp()
+    {
+    	Toast.makeText(getApplicationContext(), "synced",Toast.LENGTH_SHORT).show();
+    }
     
-  
+    public void synced(View v)
+    {
+    	sync_emp();
+    }
     static String bin2hex(byte[] data) {
     	return String.format("%0" + (data.length * 2) + "X", new BigInteger(1,data));
     }
@@ -302,7 +321,10 @@ import android.widget.Toast;
              		public void onClick(DialogInterface dialog, int whichButton) {
              			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("MYIP",e.getText().toString()).commit();
              			dialog.cancel();
+             			 if(!PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","ZERO").equals("ZERO"))
+             	        {
              			firstusecall();
+             	        }
              		}
              	});
              	alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -358,7 +380,8 @@ import android.widget.Toast;
     	//code for fetching the contents from the offline sqlite database 
     	   
         DatabaseHandler db = new DatabaseHandler(this);
-    	List<EmpDetails> contacts = db.getAllContacts();      
+    	List<EmpDetails> contacts = db.getAllContacts();     
+    	db.close();
     	String url="http://organicthemes.com/demo/profile/files/2012/12/profile_img.png";
         for (EmpDetails cn : contacts) {
           
@@ -384,9 +407,13 @@ import android.widget.Toast;
 		t4.setText("Tag: "+tagid);
     	t4.setTextColor(Color.parseColor("#2c3e50"));
    		
-   		UploadASyncTask upload = new UploadASyncTask();
-   		upload.execute();
-   		profilesetter();
+//   		UploadASyncTask upload = new UploadASyncTask();
+//   		upload.execute();
+//above two line or one line
+   		new JedisThread().execute();
+		
+   		
+   	 	
 	
 	}
 
@@ -504,26 +531,75 @@ import android.widget.Toast;
     
     
     
+    //Jedis post..
     
     
+    public class JedisTrial {
+    	//private ArrayList<String> messageContainer = new ArrayList<String>();
+    	private CountDownLatch messageReceivedLatch = new CountDownLatch(1);
+    	private CountDownLatch publishLatch = new CountDownLatch(1);
+    	int l=(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","192.168.2.8").toString().length());
+    	//no http://
+    	String JEDIS_SERVER = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","192.168.2.8").toString().subSequence(7,l-1).toString();
+    	 
     
-    
+    	private void setupPublisher() {
+    	try {
+    	System.out.println("Connecting");
+    	System.out.println(JEDIS_SERVER);
+    	Jedis jedis = new Jedis(JEDIS_SERVER,6379);
+    	
+    	jedis.auth("sensomate_123#");
+    	
+    	
+    	TelephonyManager mngr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE); 
+        JSONObject location = new JSONObject();
+      
+        location.put("uid", tagid);
+        location.put("capturedAt", System.currentTimeMillis());
+        location.put("deviceid", mngr.getDeviceId());
+        String siteid=PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAME","HQPP0093");
+        location.put("projcode", siteid);
+        
+        
+        String json = "";
+        json = location.toString();
+    	System.out.println("Waiting to publish");
+    	//publishLatch.await();
+    	System.out.println("Ready to publish, waiting one sec");
+    	// Thread.sleep(1000);
+    	System.out.println("publishing");
+    	
+    	//jsonstring here...
+    	jedis.publish("sensomate_channel",json);
+    	jedis.auth("sensomate_123#");
+    	System.out.println("published, closing publishing connection");
+    	jedis.quit();
+    	System.out.println("publishing connection closed");
+    	del=1;
+    	} catch (Exception e) {
+    	System.out.println(">>> OH NOES Pub, " + e.getMessage());
+    	del=0;
+    	e.printStackTrace();
+    	}
+    	}
+    	}
     
     
     /*
      * the call to obtain json object of location
      */
-    
+    ProgressDialog p1;
     private class GetLocation extends AsyncTask<Void, Void, Void> {
     	 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             // Showing progress dialog
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
+            p1 = new ProgressDialog(MainActivity.this);
+            p1.setMessage("Please wait...");
+            p1.setCancelable(false);
+            p1.show();
  
         }
  
@@ -535,7 +611,7 @@ import android.widget.Toast;
             Loclist=new ArrayList<String>(); 
             //String url="http://127.prayer.php";
             String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
-            url=url+"3000/api/v1/company/findallworksites/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("COMPANY","NULL");
+            url=url+"3000/api/v1/company/findalllocations/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("COMPANY",-1);
             url += "?";
             List<NameValuePair> params = new LinkedList<NameValuePair>();
 
@@ -557,14 +633,14 @@ import android.widget.Toast;
                      
                     // Getting JSON Array node
                     contacts = new JSONArray(jsonStr);
-                    worksites=new JSONArray[contacts.length()];
+                   // worksites=new JSONArray[contacts.length()];
                     // looping through All Contacts
                     for (int i = 0; i < contacts.length(); i++) {
                         JSONObject c = contacts.getJSONObject(i);
                          
                         String id = c.getString("id");
                         String loc = c.getString("name");
-                        worksites[i]=c.getJSONArray("Worksites");
+                     //   worksites[i]=c.getJSONArray("Worksites");
                         
                       System.out.println("name:  "+loc);
                       
@@ -595,8 +671,8 @@ import android.widget.Toast;
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
+            if (p1.isShowing())
+                p1.dismiss();
             /**
              * Updating parsed JSON data into ListView
              * */
@@ -614,7 +690,7 @@ import android.widget.Toast;
         	// TODO Auto-generated method stub
         	// Locate the textviews in activity_main.xml
         		Locposition=Integer.parseInt(contactList.get(position).get("id"));
-        		wsites=worksites[position];
+        	//	wsites=worksites[position];
         		System.out.println("id is:"+Locposition);
         	}
         	 
@@ -682,89 +758,89 @@ import android.widget.Toast;
             // Creating service handler class instance
         	
         	//for an older version 
+      	
+            ServiceHandler sh = new ServiceHandler();
+           String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+            url=url+"3000/api/v1/company/findallworksitesbylocation/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("COMPANY",0)+"/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("PROJECT_CODE",0);
+            url += "?";
+            List<NameValuePair> params = new LinkedList<NameValuePair>();
+
+            
+                params.add(new BasicNameValuePair("access_token", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","NULL")));
+                params.add(new BasicNameValuePair("x_key", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USERNAME","NULL")));
+                String paramString = URLEncodedUtils.format(params, "utf-8");
+
+                url += paramString;
+           
+            // Making a request to url and getting response
+            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
+ 
+            Log.d("Response: ", "> " + jsonStr);
+ 
+            if (jsonStr != null) {
+                try {
+                  //  JSONArray jsonObj = new JSONArray(jsonStr);
+                     
+                    // Getting JSON Array node
+                  //  contacts1 = jsonObj.getJSONArray("data");
+                    contacts1 = new JSONArray(jsonStr);
+                    // looping through All Contacts
+                    for (int i = 0; i < contacts1.length(); i++) {
+                        JSONObject c = contacts1.getJSONObject(i);
+                         
+                        String id = c.getString("id");
+                        String loc = c.getString("projcode");
+                      System.out.println("name:  "+loc);
+ 
+                        // tmp hashmap for single contact
+                        HashMap<String, String> contact = new HashMap<String, String>();
+ 
+                        // adding each child node to HashMap key => value
+                        contact.put("location", id);
+                        contact.put("code", loc);
+                       
+ 
+                        // adding contact to contact list
+                        contactList1.add(contact);
+                        Sitelist.add(loc);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e("ServiceHandler", "Couldn't get any data from the url");
         	
-//            ServiceHandler sh = new ServiceHandler();
-//            String url = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
-//            url=url+"3000/api/v1/company/findallworksites/"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("PROJECT_CODE",0);
-//            url += "?";
-//            List<NameValuePair> params = new LinkedList<NameValuePair>();
+        	
+            }
+        	
+        	
+//        	try{
+//        	
+//        		 Sitelist=new ArrayList<String>();
+//        	 for (int i = 0; i < wsites.length(); i++) {
+//               JSONObject c = wsites.getJSONObject(i);
+//                
+//               String id = c.getString("id");
+//               String loc = c.getString("projcode");
+//             System.out.println("name:  "+loc);
 //
-//            
-//                params.add(new BasicNameValuePair("access_token", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN","NULL")));
-//                params.add(new BasicNameValuePair("x_key", PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USERNAME","NULL")));
-//                String paramString = URLEncodedUtils.format(params, "utf-8");
+//               // tmp hashmap for single contact
+//               HashMap<String, String> contact = new HashMap<String, String>();
 //
-//                url += paramString;
-//            
-//            // Making a request to url and getting response
-//            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
-// 
-//            Log.d("Response: ", "> " + jsonStr);
-// 
-//            if (jsonStr != null) {
-//                try {
-//                    JSONObject jsonObj = new JSONObject(jsonStr);
-//                     
-//                    // Getting JSON Array node
-//                  //  contacts1 = jsonObj.getJSONArray("data");
-//                    contacts1 = new JSONArray(jsonStr);
-//                    // looping through All Contacts
-//                    for (int i = 0; i < contacts1.length(); i++) {
-//                        JSONObject c = contacts1.getJSONObject(i);
-//                         
-//                        String id = c.getString("location");
-//                        String loc = c.getString("code");
-//                      System.out.println("name:  "+loc);
-// 
-//                        // tmp hashmap for single contact
-//                        HashMap<String, String> contact = new HashMap<String, String>();
-// 
-//                        // adding each child node to HashMap key => value
-//                        contact.put("location", id);
-//                        contact.put("code", loc);
-//                       
-// 
-//                        // adding contact to contact list
-//                        contactList1.add(contact);
-//                        Sitelist.add(loc);
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            } else {
-//                Log.e("ServiceHandler", "Couldn't get any data from the url");
-        	
-        	
-//            }
-        	
-        	
-        	try{
-        	
-        		 Sitelist=new ArrayList<String>();
-        	 for (int i = 0; i < wsites.length(); i++) {
-               JSONObject c = wsites.getJSONObject(i);
-                
-               String id = c.getString("id");
-               String loc = c.getString("projcode");
-             System.out.println("name:  "+loc);
-
-               // tmp hashmap for single contact
-               HashMap<String, String> contact = new HashMap<String, String>();
-
-               // adding each child node to HashMap key => value
-               contact.put("id", id);
-               contact.put("projcode", loc);
-              
-
-               // adding contact to contact list
-               contactList1.add(contact);
-               Sitelist.add(loc);
-           }
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
+//               // adding each child node to HashMap key => value
+//               contact.put("id", id);
+//               contact.put("projcode", loc);
+//              
+//
+//               // adding contact to contact list
+//               contactList1.add(contact);
+//               Sitelist.add(loc);
+//           }
+//        	}
+//        	catch(Exception e)
+//        	{
+//        		
+//        	}
  
             return null;
         }
@@ -789,7 +865,7 @@ import android.widget.Toast;
         	View arg1, int position, long arg3) {
         	// TODO Auto-generated method stub
         	// Locate the textviews in activity_main.xml
-        		Siteposition=Integer.parseInt(contactList1.get(position).get("id"));
+        		Siteposition=Integer.parseInt(contactList1.get(position).get("location"));
         		nam=contactList1.get(position).get("projcode");
         		System.out.println("site code in shared: "+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("SITE_CODE",0));
         	}
@@ -811,6 +887,7 @@ import android.widget.Toast;
         			PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putInt("SITE_CODE",Siteposition).commit();
         			new MapId().execute();
         			dialog.cancel();
+        			sync_emp();
         			
         		}
         	});
@@ -917,7 +994,7 @@ import android.widget.Toast;
 				//	Toast.makeText(getApplicationContext(), obj.getString("token"),Toast.LENGTH_SHORT).show();
 					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("TOKEN",obj.getString("token")).commit();
 					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("USERNAME",obj.getJSONObject("user").getString("username")).commit();
-					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("COMPANY",obj.getJSONObject("user").getString("CompanyId")).commit();
+					PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putInt("COMPANY",obj.getJSONObject("user").getInt("CompanyId")).commit();
 
 					setContentView(R.layout.activity_main);
 					  first_use=PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("FIRST_USE",0);
@@ -1090,6 +1167,62 @@ import android.widget.Toast;
             
         }
     }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    class JedisThread extends AsyncTask<Void, Void, Void> {
+  	 
+  	 
+
+  	  protected void onPostExecute(Void result) {
+  		 super.onPostExecute(result);
+         // Dismiss the progress dialog
+         if (pDialog.isShowing())
+             pDialog.dismiss();
+         if(del==0)
+         {
+        	 Toast.makeText(getApplicationContext(), "Cannot send check connection",Toast.LENGTH_SHORT).show();
+         }
+         else
+        	 Toast.makeText(getApplicationContext(), "Delivered",Toast.LENGTH_SHORT).show();
+         profilesetter();
+         
+  		 
+  	  }
+  	 protected void onPreExecute() {
+  		super.onPreExecute();
+		pDialog = new ProgressDialog(MainActivity.this);
+		pDialog.setMessage("Please wait...");
+		pDialog.setCancelable(false);
+     	pDialog.show();
+  		 
+ 	  }
+
+	@Override
+	protected Void doInBackground(Void... params) {
+		// TODO Auto-generated method stub
+JedisTrial j=new JedisTrial();
+		
+		j.setupPublisher();
+   		
+		return null;
+	}
+  	  
+  	}
     
  }
 
