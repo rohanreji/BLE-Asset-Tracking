@@ -329,7 +329,7 @@ public class MainActivity extends Activity {
 				e.setText(PreferenceManager
 						.getDefaultSharedPreferences(MainActivity.this)
 						.getString("MYIP",
-								"almoayyed.sensomate.com"));
+								"http://almoayyed.sensomate.com"));
 				alert.setPositiveButton("Ok",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
@@ -585,7 +585,7 @@ public class MainActivity extends Activity {
 		String JEDIS_SERVER = PreferenceManager
 				.getDefaultSharedPreferences(MainActivity.this)
 				.getString("MYIP", "192.168.2.8").toString()
-				.subSequence(7, l - 1).toString();
+				.subSequence(7, l).toString();
 
 		private void setupPublisher() {
 			try {
