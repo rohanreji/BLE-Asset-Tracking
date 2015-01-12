@@ -178,21 +178,21 @@ public class MainActivity extends Activity {
 	}
 
 	// commented for testing
-	 @SuppressLint("NewApi") public void enableForegroundMode() {
-	 Log.d(TAG, "enableForegroundMode");
-	
-	 IntentFilter tagDetected = new
-	 IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
-	 IntentFilter[] writeTagFilters = new IntentFilter[] {tagDetected};
-	 nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
-	 writeTagFilters, null);
-	 }
-	
-	 @SuppressLint("NewApi") public void disableForegroundMode() {
-	 Log.d(TAG, "disableForegroundMode");
-	
-	 nfcAdapter.disableForegroundDispatch(this);
-	 }
+//	 @SuppressLint("NewApi") public void enableForegroundMode() {
+//	 Log.d(TAG, "enableForegroundMode");
+//	
+//	 IntentFilter tagDetected = new
+//	 IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
+//	 IntentFilter[] writeTagFilters = new IntentFilter[] {tagDetected};
+//	 nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
+//	 writeTagFilters, null);
+//	 }
+//	
+//	 @SuppressLint("NewApi") public void disableForegroundMode() {
+//	 Log.d(TAG, "disableForegroundMode");
+//	
+//	 nfcAdapter.disableForegroundDispatch(this);
+//	 }
 
 	@Override
 	public void onStart() {
@@ -329,7 +329,7 @@ public class MainActivity extends Activity {
 				e.setText(PreferenceManager
 						.getDefaultSharedPreferences(MainActivity.this)
 						.getString("MYIP",
-								"almoayyed.sensomate.com"));
+								"http://almoayyed.sensomate.com"));
 				alert.setPositiveButton("Ok",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
@@ -387,7 +387,7 @@ public class MainActivity extends Activity {
 
 		super.onResume();
 		// commented for testing
-	    enableForegroundMode();
+	   // enableForegroundMode();
 	}
 
 	@Override
@@ -396,7 +396,7 @@ public class MainActivity extends Activity {
 
 		super.onPause();
 		// commented for testing
-		disableForegroundMode();
+		//disableForegroundMode();
 	}
 
 	public void profilesetter() {
@@ -585,7 +585,7 @@ public class MainActivity extends Activity {
 		String JEDIS_SERVER = PreferenceManager
 				.getDefaultSharedPreferences(MainActivity.this)
 				.getString("MYIP", "192.168.2.8").toString()
-				.subSequence(7, l - 1).toString();
+				.subSequence(7, l).toString();
 
 		private void setupPublisher() {
 			try {
