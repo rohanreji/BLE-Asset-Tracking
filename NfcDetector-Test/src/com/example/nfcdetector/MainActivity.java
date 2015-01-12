@@ -143,8 +143,10 @@ public class MainActivity extends Activity {
 			nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(
 					this, this.getClass())
 					.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+		
 			t = (TextView) findViewById(R.id.textView1);
 			t.setTypeface(font);
+			
 			TextView t2 = (TextView) findViewById(R.id.textView2);
 			t2.setTypeface(font);
 			t3 = (TextView) findViewById(R.id.textView3);
@@ -176,21 +178,21 @@ public class MainActivity extends Activity {
 	}
 
 	// commented for testing
-//	 @SuppressLint("NewApi") public void enableForegroundMode() {
-//	 Log.d(TAG, "enableForegroundMode");
-//	
-//	 IntentFilter tagDetected = new
-//	 IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
-//	 IntentFilter[] writeTagFilters = new IntentFilter[] {tagDetected};
-//	 nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
-//	 writeTagFilters, null);
-//	 }
-//	
-//	 @SuppressLint("NewApi") public void disableForegroundMode() {
-//	 Log.d(TAG, "disableForegroundMode");
-//	
-//	 nfcAdapter.disableForegroundDispatch(this);
-//	 }
+	 @SuppressLint("NewApi") public void enableForegroundMode() {
+	 Log.d(TAG, "enableForegroundMode");
+	
+	 IntentFilter tagDetected = new
+	 IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
+	 IntentFilter[] writeTagFilters = new IntentFilter[] {tagDetected};
+	 nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
+	 writeTagFilters, null);
+	 }
+	
+	 @SuppressLint("NewApi") public void disableForegroundMode() {
+	 Log.d(TAG, "disableForegroundMode");
+	
+	 nfcAdapter.disableForegroundDispatch(this);
+	 }
 
 	@Override
 	public void onStart() {
@@ -327,7 +329,7 @@ public class MainActivity extends Activity {
 				e.setText(PreferenceManager
 						.getDefaultSharedPreferences(MainActivity.this)
 						.getString("MYIP",
-								"http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:"));
+								"almoayyed.sensomate.com"));
 				alert.setPositiveButton("Ok",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
@@ -385,7 +387,7 @@ public class MainActivity extends Activity {
 
 		super.onResume();
 		// commented for testing
-	   // enableForegroundMode();
+	    enableForegroundMode();
 	}
 
 	@Override
@@ -394,7 +396,7 @@ public class MainActivity extends Activity {
 
 		super.onPause();
 		// commented for testing
-		//disableForegroundMode();
+		disableForegroundMode();
 	}
 
 	public void profilesetter() {
@@ -538,8 +540,8 @@ public class MainActivity extends Activity {
 				String JEDIS_SERVER1 = PreferenceManager
 						.getDefaultSharedPreferences(MainActivity.this)
 						.getString("MYIP",
-								"http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
-				JEDIS_SERVER1 = JEDIS_SERVER1 + "1337/attendance/pushtodb";
+								"http://almoayyed.sensomate.com");
+				JEDIS_SERVER1 = JEDIS_SERVER1 + "/attendance/pushtodb";
 				URL url = new URL(JEDIS_SERVER1);
 				HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
 				String json = "";
@@ -653,9 +655,9 @@ public class MainActivity extends Activity {
 			// String url="http://127.prayer.php";
 			String url = PreferenceManager.getDefaultSharedPreferences(
 					MainActivity.this).getString("MYIP",
-					"http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+					"http://almoayyed.sensomate.com");
 			url = url
-					+ "3000/api/v1/company/findalllocations/"
+					+ "/api/v1/company/findalllocations/"
 					+ PreferenceManager.getDefaultSharedPreferences(
 							MainActivity.this).getInt("COMPANY", -1);
 			url += "?";
@@ -815,9 +817,9 @@ public class MainActivity extends Activity {
 			ServiceHandler sh = new ServiceHandler();
 			String url = PreferenceManager.getDefaultSharedPreferences(
 					MainActivity.this).getString("MYIP",
-					"http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
+					"http://almoayyed.sensomate.com");
 			url = url
-					+ "3000/api/v1/company/findallworksitesbylocation/"
+					+ "/api/v1/company/findallworksitesbylocation/"
 					+ PreferenceManager.getDefaultSharedPreferences(
 							MainActivity.this).getInt("COMPANY", 0)
 					+ "/"
@@ -1079,6 +1081,17 @@ public class MainActivity extends Activity {
 
 					setContentView(R.layout.activity_main);
 					
+					Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
+					t = (TextView) findViewById(R.id.textView1);
+					t.setTypeface(font);
+					
+					TextView t2 = (TextView) findViewById(R.id.textView2);
+					t2.setTypeface(font);
+					t3 = (TextView) findViewById(R.id.textView3);
+					t3.setTypeface(font);
+					t4 = (TextView) findViewById(R.id.textView4);
+					t4.setTypeface(font);
+					
 					first_use = PreferenceManager.getDefaultSharedPreferences(
 							MainActivity.this).getInt("FIRST_USE", 0);
 					if (first_use == 0) {
@@ -1120,8 +1133,8 @@ public class MainActivity extends Activity {
 				String JEDIS_SERVER1 = PreferenceManager
 						.getDefaultSharedPreferences(MainActivity.this)
 						.getString("MYIP",
-								"http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
-				JEDIS_SERVER1 = JEDIS_SERVER1 + "3000/auth/login";
+								"http://almoayyed.sensomate.com");
+				JEDIS_SERVER1 = JEDIS_SERVER1 + "/auth/login";
 				URL url = new URL(JEDIS_SERVER1);
 				HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
 				String json = "";
@@ -1189,8 +1202,8 @@ public class MainActivity extends Activity {
 				String JEDIS_SERVER1 = PreferenceManager
 						.getDefaultSharedPreferences(MainActivity.this)
 						.getString("MYIP",
-								"http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:");
-				JEDIS_SERVER1 = JEDIS_SERVER1 + "3000/api/v1/device/addmap";
+								"http://almoayyed.sensomate.com");
+				JEDIS_SERVER1 = JEDIS_SERVER1 + "/api/v1/device/addmap";
 
 				JEDIS_SERVER1 += "?";
 				List<NameValuePair> params1 = new LinkedList<NameValuePair>();
