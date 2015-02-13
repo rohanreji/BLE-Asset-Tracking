@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/rohan/GitHub/NfcDetector/app/libs/jedis-2.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="f74bd6a94fcd7d3ed81d35be207aaab347322892">
+        <dex dex="/home/rohan/GitHub/NfcDetector/app/build/intermediates/pre-dexed/debug/jedis-2.0.0-f5c1f55d15639642d6113ca7adce2f3e8b95c011.jar" />
+    </item>
+    <item
+        jar="/home/rohan/GitHub/NfcDetector/app/libs/volley.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d4aaa36e04ee71a83444f8367c97a46fda662d2c">
+        <dex dex="/home/rohan/GitHub/NfcDetector/app/build/intermediates/pre-dexed/debug/volley-aa2fe54e90d5229888fff88b2f5d20393a3a8356.jar" />
+    </item>
+    <item
+        jar="/home/rohan/GitHub/NfcDetector/app/libs/ndeftools-1.2.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="1342b5b70a68e06a3d3cb1a22958077cdca94067">
+        <dex dex="/home/rohan/GitHub/NfcDetector/app/build/intermediates/pre-dexed/debug/ndeftools-1.2.3-430973f59eb03d40424700af3595781a812960d9.jar" />
+    </item>
+    <item
+        jar="/home/rohan/Downloads/android-sdk-linux/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="/home/rohan/GitHub/NfcDetector/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-bb25de6fab2dcf5fd754e0fb19ed838d2f10994d.jar" />
+    </item>
+
+</items>

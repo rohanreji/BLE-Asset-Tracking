@@ -1,0 +1,114 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    
+    tools:context="com.example.nfcdetector.MainActivity"
+    android:background="#ecf0f1"
+  >
+  
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Scan Tag!"
+        android:textColor="#7f8c8d"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
+      />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Copyright © sensomate 2014"
+         android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_above="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/background"
+        android:src="@drawable/propic" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:text=" "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:text=" "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:onClick="synced"
+        android:src="@drawable/sync" />
+    <!-- uncomment for testing -->
+
+     <!--<Button-->
+        <!--android:id="@+id/button1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_above="@+id/textView2"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_marginBottom="15dp"-->
+        <!--android:background="#ecf0f1"-->
+        <!--android:onClick="clicks"-->
+        <!--android:text="test" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/editText1"-->
+        <!--android:layout_width="130dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignTop="@+id/button1"-->
+        <!--android:layout_toLeftOf="@+id/button1"-->
+        <!--android:ems="10"-->
+        <!--android:text="C1F409E9" >-->
+
+
+        <!--<requestFocus />-->
+    <!--</EditText>-->
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="write tag"
+        android:id="@+id/button"
+        android:background="#2c3e50"
+        android:textColor="#fff"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:onClick="write"
+        android:layout_alignParentTop="true"
+         />
+
+
+</RelativeLayout>

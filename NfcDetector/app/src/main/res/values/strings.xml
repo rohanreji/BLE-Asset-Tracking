@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Almoayyed</string>
+    <string name="login">Almoayyed-login</string>
+    <string name="attendance">Almoayyed-scan</string>
+    <string name="write">Almoayyed-write</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>

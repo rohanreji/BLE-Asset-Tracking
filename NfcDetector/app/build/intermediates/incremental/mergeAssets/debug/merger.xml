@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/home/rohan/GitHub/NfcDetector/app/src/main/assets"><file name="demo.otf" path="/home/rohan/GitHub/NfcDetector/app/src/main/assets/demo.otf"/></source></dataSet><dataSet config="debug"><source path="/home/rohan/GitHub/NfcDetector/app/src/debug/assets"/></dataSet></merger>

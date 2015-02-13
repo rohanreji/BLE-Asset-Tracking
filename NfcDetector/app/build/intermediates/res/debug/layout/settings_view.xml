@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Set Server"
+          
+            android:layout_marginBottom="5dp"
+            android:background="#ecf0f1"
+            
+  
+        android:layout_below="@+id/button1"/>
+         <Button
+        android:id="@+id/button2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+       android:layout_marginBottom="5dp"
+        android:layout_below="@+id/button1"
+       
+            android:background="#ecf0f1"
+            
+        android:text="Select Location" />
+         <Button
+        android:id="@+id/button3"
+        android:layout_width="fill_parent"
+       
+            android:background="#ecf0f1"
+        android:layout_height="wrap_content"
+
+             android:layout_marginBottom="5dp"
+        android:layout_below="@+id/button2"
+        android:text="Select Project" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="fill_parent"
+
+            android:background="#ecf0f1"
+            android:layout_height="wrap_content"
+
+
+            android:layout_below="@+id/button3"
+            android:text="Select Worksite" />
+    </RelativeLayout>
+
+    
+
+</RelativeLayout><!-- From: file:/home/rohan/GitHub/NfcDetector/app/src/main/res/layout/settings_view.xml -->
