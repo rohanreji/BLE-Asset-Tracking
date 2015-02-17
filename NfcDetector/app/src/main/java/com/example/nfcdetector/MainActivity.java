@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,6 +29,9 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -94,7 +98,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     protected NfcAdapter nfcAdapter;
     protected PendingIntent nfcPendingIntent;
-    String IP="http://192.168.2.14:3000";
+    String IP="http://almoayyed.sensomate.com";
     static int app_mode;
     static String last_emp_name;
     EditText e;
@@ -103,21 +107,24 @@ public class MainActivity extends Activity {
     Intent in;
     int del = 0;
     TextView t;
-    String nam;
+    String nam,nam2;
     int back_flag = 0;
     int first_use;
     boolean active;
     TextView t3, t4;
-    JSONArray contacts = null, contacts1 = null;
+    JSONArray contacts = null, contacts1 = null,contacts2=null;
+    ArrayList<String> emplist;
+    ArrayList<String> idlist;
     JSONArray[] worksites;
     JSONArray wsites;
     // stroes both id and name for projects
-    ArrayList<HashMap<String, String>> contactList, contactList1;
+    ArrayList<HashMap<String, String>> contactList, contactList1,contactList2;
     // to load first spinner
     ArrayList<String> Loclist;
-    ArrayList<String> Sitelist;
+    ArrayList<String> Sitelist,Sitelist2;
     // The id corresponding to location selected from first spinner
-    int Locposition, Siteposition;
+    int Locposition, Siteposition,Siteposition2;
+    MapId m;
 
     private static final String TAG = MainActivity.class.getName();
 
@@ -128,8 +135,12 @@ public class MainActivity extends Activity {
         app_mode = 0;
         contactList = new ArrayList<HashMap<String, String>>();
         contactList1 = new ArrayList<HashMap<String, String>>();
+        contactList2 = new ArrayList<HashMap<String, String>>();
         Loclist = new ArrayList<String>();
         Sitelist = new ArrayList<String>();
+        Sitelist2 = new ArrayList<String>();
+        emplist = new ArrayList<String>();
+        idlist = new ArrayList<String>();
         Locposition = 0;
         last_emp_name= new String();
         Siteposition = 0;
@@ -141,7 +152,7 @@ public class MainActivity extends Activity {
         bar.setBackgroundDrawable(new ColorDrawable(Color
                 .parseColor("#34495e")));
         bar.setTitle(Html
-                .fromHtml("<font color='#ecf0f1'>Almoayeed - scan</font>"));
+                .fromHtml("<font color='#ecf0f1'>Almoayyed - scan</font>"));
 
 
         if (PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN", "ZERO").equals("ZERO")) {
@@ -375,21 +386,20 @@ public class MainActivity extends Activity {
     }
 
     public void sync_emp() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        db.onUpgrade(db.getReadableDatabase(), 1, 1);
+//        DatabaseHandler db = new DatabaseHandler(this);
+//        db.onUpgrade(db.getReadableDatabase(), 1, 1);
 
         /**
          * CRUD Operations
          * */
         // Inserting Contacts
         Log.d("Insert: ", "Inserting ..");
-        db.addContact(new EmpDetails("702F11E9", "Jack Doe", "HQPP0093", 1, "http://www.american.edu/uploads/profiles/large/chris_palmer_profile_11.jpg"));
-        db.addContact(new EmpDetails("C1F409E9", "Jane Elza", "HQPP0074", 1, "http://www.littleblackdressgroup.com.au/wp-content/uploads/2012/11/MA-Profile-Photo.jpg"));
+        new Populator().execute();
+//        db.addContact(new EmpDetails("702F11E9", "Jack Doe", "HQPP0093", 1, "http://www.american.edu/uploads/profiles/large/chris_palmer_profile_11.jpg"));
+//        db.addContact(new EmpDetails("C1F409E9", "Jane Elza", "HQPP0074", 1, "http://www.littleblackdressgroup.com.au/wp-content/uploads/2012/11/MA-Profile-Photo.jpg"));
+//
 
 
-        Toast.makeText(getApplicationContext(), "synced " + db.getContactsCount(), Toast.LENGTH_SHORT)
-                .show();
-        db.close();
     }
 
     public void synced(View v) {
@@ -545,20 +555,20 @@ public class MainActivity extends Activity {
 		 * code for syncing profile with local database
 		 *
 		 */
-//		DatabaseHandler db = new DatabaseHandler(this);
-//
-//		List<EmpDetails> contacts = db.getAllContacts();
-//		for(EmpDetails e:contacts)
-//		{
-//
-//			if((e.getSiteName().equals(siteid))&&e.getID().equals(tagid)){
-//				 name= e.getName();
-//				 url = e.getImageUrl();
-//				// Toast.makeText(getApplicationContext(), e.getID(),Toast.LENGTH_SHORT).show();
-//			}
-//		}
-//		db.close();
-//
+		DatabaseHandler db = new DatabaseHandler(this);
+
+		List<EmpDetails> contacts = db.getAllContacts();
+		for(EmpDetails e:contacts)
+		{
+
+			if((e.getSiteName().equals(siteid))&&e.getID().equals(tagid)){
+				 name= e.getName();
+				 url = e.getImageUrl();
+				// Toast.makeText(getApplicationContext(), e.getID(),Toast.LENGTH_SHORT).show();
+			}
+		}
+		db.close();
+
 
 
         t.setText(name);
@@ -567,8 +577,9 @@ public class MainActivity extends Activity {
         t3.setTextColor(Color.parseColor("#2c3e50"));
 
         //
-        if (!url.equals(" "))
-            new ImageDownloader(im).execute(url);
+        if (!url.equals(" ")) {
+            //       new ImageDownloader(im).execute(url);
+        }
     }
 
     public void clicks(View v) {
@@ -649,12 +660,16 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
+
             // TODO Auto-generated method stub
             super.onPreExecute();
             // pDialog = new ProgressDialog(MainActivity.this);
             // pDialog.setMessage("Please wait...");
             // pDialog.setCancelable(false);
             // pDialog.show();
+            if((m!=null)&&(!m.isCancelled()))
+                m.cancel(true);
+
         }
 
         @Override
@@ -717,6 +732,7 @@ public class MainActivity extends Activity {
                 .getDefaultSharedPreferences(MainActivity.this)
                 .getString("MYIP", IP).toString().length());
         // no http://
+
         String JEDIS_SERVER = PreferenceManager
                 .getDefaultSharedPreferences(MainActivity.this)
                 .getString("MYIP", IP).toString()
@@ -724,6 +740,14 @@ public class MainActivity extends Activity {
 
         private void setupPublisher() {
             try {
+                if(JEDIS_SERVER.contains(":")){
+                        String s[]=new String[2];
+                        s=JEDIS_SERVER.split(":");
+                        JEDIS_SERVER=s[0];
+                      //  Toast.makeText(getApplicationContext(),JEDIS_SERVER,Toast.LENGTH_SHORT).show();
+                        Log.e("server redis",JEDIS_SERVER);
+                }
+
                 System.out.println("Connecting");
                 System.out.println(JEDIS_SERVER);
                 Jedis jedis = new Jedis(JEDIS_SERVER, 6379);
@@ -736,8 +760,9 @@ public class MainActivity extends Activity {
                 location.put("uid", tagid);
                 location.put("capturedAt", System.currentTimeMillis());
                 location.put("deviceid", mngr.getDeviceId());
-                String siteid = PreferenceManager.getDefaultSharedPreferences(
-                        MainActivity.this).getString("SITE_NAME", "HQPP0093");
+                int siteid = PreferenceManager.getDefaultSharedPreferences(
+                        MainActivity.this).getInt("SITE_CODE", 0);
+               Log.e("worksiteid:",siteid+" " );
                 location.put("projcode", siteid);
                 location.put("batlevel",getBatteryLevel());
 
@@ -775,6 +800,9 @@ public class MainActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            if((m!=null)&&(!m.isCancelled()))
+                m.cancel(true);
             // Showing progress dialog
             p1 = new ProgressDialog(MainActivity.this);
             p1.setMessage("Please wait...");
@@ -812,6 +840,7 @@ public class MainActivity extends Activity {
 
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,getApplicationContext());
+            Log.d("URL: ", "> " +url.toString());
 
             Log.d("Response: ", "> " + jsonStr);
 
@@ -937,7 +966,11 @@ public class MainActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+
             // Showing progress dialog
+            if((m!=null)&&(!m.isCancelled()))
+                m.cancel(true);
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
@@ -950,6 +983,8 @@ public class MainActivity extends Activity {
             // Creating service handler class instance
 
             // for an older version
+            contactList1 = new ArrayList<HashMap<String, String>>();
+            Sitelist = new ArrayList<String>();
 
             ServiceHandler sh = new ServiceHandler();
             String url = PreferenceManager.getDefaultSharedPreferences(
@@ -959,22 +994,22 @@ public class MainActivity extends Activity {
                     + "/api/v1/location/getallprojects/"
                     + PreferenceManager.getDefaultSharedPreferences(
                     MainActivity.this).getInt("PROJECT_CODE", 0);
-            url += "?";
-            List<NameValuePair> params = new LinkedList<NameValuePair>();
-            Sitelist = new ArrayList<String>();
-            params.add(new BasicNameValuePair("access_token", PreferenceManager
-                    .getDefaultSharedPreferences(MainActivity.this).getString(
-                            "TOKEN", "NULL")));
-            params.add(new BasicNameValuePair("x_key", PreferenceManager
-                    .getDefaultSharedPreferences(MainActivity.this).getString(
-                            "USERNAME", "NULL")));
-            String paramString = URLEncodedUtils.format(params, "utf-8");
-
-            url += paramString;
+//            url += "?";
+//            List<NameValuePair> params = new LinkedList<NameValuePair>();
+//            Sitelist = new ArrayList<String>();
+//            params.add(new BasicNameValuePair("access_token", PreferenceManager
+//                    .getDefaultSharedPreferences(MainActivity.this).getString(
+//                            "TOKEN", "NULL")));
+//            params.add(new BasicNameValuePair("x_key", PreferenceManager
+//                    .getDefaultSharedPreferences(MainActivity.this).getString(
+//                            "USERNAME", "NULL")));
+//            String paramString = URLEncodedUtils.format(params, "utf-8");
+//
+//            url += paramString;
 
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,getApplicationContext());
-
+            Log.d("URL: ", "> " +url.toString());
             Log.d("Response: ", "> " + jsonStr);
 
             if (jsonStr != null) {
@@ -1090,13 +1125,12 @@ public class MainActivity extends Activity {
                             PreferenceManager
                                     .getDefaultSharedPreferences(
                                             MainActivity.this).edit()
-                                    .putString("SITE_NAME", nam).commit();
+                                    .putString("SITE_NAMES", nam).commit();
                             PreferenceManager
                                     .getDefaultSharedPreferences(
                                             MainActivity.this).edit()
-                                    .putInt("SITE_CODE", Siteposition).commit();
-                            new MapId().execute();
-                            dialog.cancel();
+                                    .putInt("SITE_CODES", Siteposition).commit();
+                         dialog.cancel();
                             firstusecall3();
                            // sync_emp();
 
@@ -1121,7 +1155,10 @@ public class MainActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if((m!=null)&&(!m.isCancelled()))
+                m.cancel(true);
             // Showing progress dialog
+
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
@@ -1134,7 +1171,10 @@ public class MainActivity extends Activity {
             // Creating service handler class instance
 
             // for an older version
+            contactList2 = new ArrayList<HashMap<String, String>>();
 
+
+            Sitelist2 = new ArrayList<String>();
             ServiceHandler sh = new ServiceHandler();
             String url = PreferenceManager.getDefaultSharedPreferences(
                     MainActivity.this).getString("MYIP",
@@ -1143,7 +1183,7 @@ public class MainActivity extends Activity {
                     + "/api/v1/project/getallworksites/"
 
                     + PreferenceManager.getDefaultSharedPreferences(
-                    MainActivity.this).getInt("SITE_CODE", 0);
+                    MainActivity.this).getInt("SITE_CODES", 0);
 
 
             // Making a request to url and getting response
@@ -1157,10 +1197,10 @@ public class MainActivity extends Activity {
 
                     // Getting JSON Array node
                     // contacts1 = jsonObj.getJSONArray("data");
-                    contacts1 = new JSONArray(jsonStr);
+                    contacts2 = new JSONArray(jsonStr);
                     // looping through All Contacts
-                    for (int i = 0; i < contacts1.length(); i++) {
-                        JSONObject c = contacts1.getJSONObject(i);
+                    for (int i = 0; i < contacts2.length(); i++) {
+                        JSONObject c = contacts2.getJSONObject(i);
 
                         String id = c.getString("id");
                         String loc = c.getString("name");
@@ -1174,8 +1214,8 @@ public class MainActivity extends Activity {
                         contact.put("code", loc);
 
                         // adding contact to contact list
-                        contactList1.add(contact);
-                        Sitelist.add(loc);
+                        contactList2.add(contact);
+                        Sitelist2.add(loc);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1225,7 +1265,7 @@ public class MainActivity extends Activity {
 
             final Spinner s = new Spinner(MainActivity.this);
             s.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                    android.R.layout.simple_spinner_dropdown_item, Sitelist));
+                    android.R.layout.simple_spinner_dropdown_item, Sitelist2));
 
             s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -1234,9 +1274,9 @@ public class MainActivity extends Activity {
                                            int position, long arg3) {
                     // TODO Auto-generated method stub
                     // Locate the textviews in activity_main.xml
-                    Siteposition = Integer.parseInt(contactList1.get(position)
+                    Siteposition2 = Integer.parseInt(contactList2.get(position)
                             .get("location"));
-                    nam = contactList1.get(position).get("code");
+                    nam2 = contactList2.get(position).get("code");
                     System.out.println("site code in shared: "
                             + PreferenceManager.getDefaultSharedPreferences(
                             MainActivity.this).getInt("SITE_CODE", 0));
@@ -1261,18 +1301,22 @@ public class MainActivity extends Activity {
                                     .getDefaultSharedPreferences(
                                             MainActivity.this).edit()
                                     .putInt("FIRST_USE", 1).commit();
-//                            PreferenceManager
-//                                    .getDefaultSharedPreferences(
-//                                            MainActivity.this).edit()
-//                                    .putString("SITE_NAME", nam).commit();
-//                            PreferenceManager
-//                                    .getDefaultSharedPreferences(
-//                                            MainActivity.this).edit()
-//                                    .putInt("SITE_CODE", Siteposition).commit();
-                            new MapId().execute();
+                            PreferenceManager
+                                    .getDefaultSharedPreferences(
+                                            MainActivity.this).edit()
+                                    .putString("SITE_NAME", nam2).commit();
+                            PreferenceManager
+                                    .getDefaultSharedPreferences(
+                                            MainActivity.this).edit()
+                                    .putInt("SITE_CODE", Siteposition2).commit();
+                            m=new MapId();
+                            m.execute();
+
+                            //setting timeout thread for async task
+
                             dialog.cancel();
 
-                            sync_emp();
+
 
                         }
                     });
@@ -1299,6 +1343,7 @@ public class MainActivity extends Activity {
         }
 
         protected Bitmap doInBackground(String... urls) {
+
             URL url;
             try {
                 url = new URL(urls[0]);
@@ -1388,8 +1433,8 @@ public class MainActivity extends Activity {
 //                                            "CompanyId")).commit();
 
                     setContentView(R.layout.activity_main);
-                    Toast.makeText(getApplicationContext(),
-                            obj.getString("token"),Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(),
+//                            obj.getString("token"),Toast.LENGTH_SHORT).show();
                     Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
                     t = (TextView) findViewById(R.id.textView1);
                     t.setTypeface(font);
@@ -1421,6 +1466,9 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             // TODO Auto-generated method stub
             super.onPreExecute();
+            if((m!=null)&&(!m.isCancelled()))
+
+                m.cancel(true);
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
@@ -1484,6 +1532,9 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String result) {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+            sync_emp();
 
         }
 
@@ -1491,6 +1542,10 @@ public class MainActivity extends Activity {
         protected void onPreExecute() {
             // TODO Auto-generated method stub
             super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Mapping Device...");
+            pDialog.setCancelable(false);
+            pDialog.show();
 
         }
 
@@ -1498,7 +1553,11 @@ public class MainActivity extends Activity {
         protected String doInBackground(Void... params) {
 
             try {
-
+                if(isCancelled()){
+                    cancel(true);
+                    if (pDialog.isShowing())
+                    pDialog.dismiss();
+                }
                 TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
                 JSONObject location = new JSONObject();
 
@@ -1507,27 +1566,36 @@ public class MainActivity extends Activity {
                         MainActivity.this).getInt("SITE_CODE", 1);
                 location.put("projcode", siteid);
 
-                HttpClient httpclient = new DefaultHttpClient();
+
                 String JEDIS_SERVER1 = PreferenceManager
                         .getDefaultSharedPreferences(MainActivity.this)
                         .getString("MYIP",
                                 IP);
                 JEDIS_SERVER1 = JEDIS_SERVER1 + "/api/v1/device/addmap";
 
-                JEDIS_SERVER1 += "?";
-                List<NameValuePair> params1 = new LinkedList<NameValuePair>();
-
-                params1.add(new BasicNameValuePair("access_token",
-                        PreferenceManager.getDefaultSharedPreferences(
-                                MainActivity.this).getString("TOKEN", "NULL")));
-                params1.add(new BasicNameValuePair("x_key", PreferenceManager
-                        .getDefaultSharedPreferences(MainActivity.this)
-                        .getString("USERNAME", "NULL")));
-                String paramString = URLEncodedUtils.format(params1, "utf-8");
-
-                JEDIS_SERVER1 += paramString;
+//                JEDIS_SERVER1 += "?";
+//                List<NameValuePair> params1 = new LinkedList<NameValuePair>();
+//
+//                params1.add(new BasicNameValuePair("access_token",
+//                        PreferenceManager.getDefaultSharedPreferences(
+//                                MainActivity.this).getString("TOKEN", "NULL")));
+//                params1.add(new BasicNameValuePair("x_key", PreferenceManager
+//                        .getDefaultSharedPreferences(MainActivity.this)
+//                        .getString("USERNAME", "NULL")));
+//                String paramString = URLEncodedUtils.format(params1, "utf-8");
+//
+//                JEDIS_SERVER1 += paramString;
 
                 URL url = new URL(JEDIS_SERVER1);
+
+                HttpParams httpParameters = new BasicHttpParams();
+
+                int timeoutConnection = 3000;
+                HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+
+                int timeoutSocket = 5000;
+                HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+
 
                 HttpPost httpPost = new HttpPost(JEDIS_SERVER1);
                 String json = "";
@@ -1537,10 +1605,9 @@ public class MainActivity extends Activity {
                         "application/json"));
                 httpPost.setEntity(se);
 
-                httpPost.setHeader("User-Agent", "NFC-DETECTOR/1.0");
-                httpPost.setHeader("Accept", "application/json");
-                httpPost.setHeader("Content-type", "application/json");
-
+                httpPost.setHeader("x-access-token",PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("TOKEN", "NULL"));
+                httpPost.setHeader("x-key",PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("USERNAME", "NULL"));
+                DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
                 HttpResponse response = httpclient.execute(httpPost);
                 HttpEntity entity = response.getEntity();
 
@@ -1551,7 +1618,7 @@ public class MainActivity extends Activity {
                 } else
                     return "true";
             } catch (Exception e) {
-                Log.e("ERROR IN SEVER UPLOAD", e.getMessage());
+               // Log.e("ERROR IN SEVER UPLOAD", e.getMessage());
                 return "sorry";
             }
 
@@ -1596,6 +1663,108 @@ public class MainActivity extends Activity {
         }
 
     }
+
+
+
+
+    private class Populator extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if((m!=null)&&(!m.isCancelled()))
+                m.cancel(true);
+            // Showing progress dialog
+
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Database Populating..");
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            emplist = new ArrayList<String>();
+            idlist = new ArrayList<String>();
+            ServiceHandler sh = new ServiceHandler();
+            String url = PreferenceManager.getDefaultSharedPreferences(
+                    MainActivity.this).getString("MYIP",
+                    IP);
+            Log.e("projectcode",PreferenceManager.getDefaultSharedPreferences(
+                    MainActivity.this).getInt("PROJECT_CODE", 0)+"");
+            url = url
+                    + "/api/v1/project/getallemployees/"+PreferenceManager.getDefaultSharedPreferences(
+                    MainActivity.this).getInt("PROJECT_CODE", 0);
+
+//            url += "?";
+//            List<NameValuePair> params = new LinkedList<NameValuePair>();
+//
+//            params.add(new BasicNameValuePair("x-access-token", PreferenceManager
+//                    .getDefaultSharedPreferences(WriteActivity.this).getString(
+//                            "TOKEN", "NULL")));
+//            params.add(new BasicNameValuePair("x-key", PreferenceManager
+//                    .getDefaultSharedPreferences(WriteActivity.this).getString(
+//                            "USERNAME", "NULL")));
+//            String paramString = URLEncodedUtils.format(params, "utf-8");
+//
+//            url += paramString;
+
+            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,MainActivity.this.getApplicationContext());
+
+            Log.d("Response: ", "> " + jsonStr);
+
+
+            if (jsonStr != null) {
+                try {
+                    // JSONObject jsonObj = new JSONObject(jsonStr);
+
+                    // Getting JSON Array node
+                    JSONArray emp = new JSONArray(jsonStr);
+                    // worksites=new JSONArray[contacts.length()];
+                    // looping through All Contacts
+                    for (int i = 0; i < emp.length(); i++) {
+                        JSONObject c = emp.getJSONObject(i);
+                        JSONObject employ=c.getJSONObject("Employee");
+                        emplist.add(employ.getString("name"));
+                        JSONObject trade=employ.getJSONObject("Trade");
+                        idlist.add(Integer.toString(employ.getInt("empid")));
+                        // worksites[i]=c.getJSONArray("Worksites");
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e("ServiceHandler", "Couldn't get any data from the url");
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+           int projectcode= PreferenceManager.getDefaultSharedPreferences(
+                    MainActivity.this).getInt("SITE_CODES", 0);
+           String sitename= PreferenceManager.getDefaultSharedPreferences(
+                    MainActivity.this).getString("SITE_NAME", null);
+            DatabaseHandler db = new DatabaseHandler(MainActivity.this);
+            db.onUpgrade(db.getReadableDatabase(), 1, 1);
+            for(int i=0;i<emplist.size();i++) {
+                db.addContact(new EmpDetails(idlist.get(i),emplist.get(i), sitename, projectcode, "http://www.littleblackdressgroup.com.au/wp-content/uploads/2012/11/MA-Profile-Photo.jpg"));
+
+            }
+            Toast.makeText(getApplicationContext(), "synced", Toast.LENGTH_SHORT)
+                    .show();
+            db.close();
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+        }
+
+    }
+
 
 
     public float getBatteryLevel() {

@@ -9,6 +9,7 @@
 
     <tech-list>
         <tech>android.nfc.tech.Ndef</tech>
+
         <!-- class name -->
     </tech-list>
 </resources>

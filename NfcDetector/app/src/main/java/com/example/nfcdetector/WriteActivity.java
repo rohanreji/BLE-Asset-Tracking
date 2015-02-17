@@ -106,7 +106,7 @@ public class WriteActivity extends Activity {
         bar.setBackgroundDrawable(new ColorDrawable(Color
                 .parseColor("#34495e")));
         bar.setTitle(Html
-                .fromHtml("<font color='#ecf0f1'>Almoayeed - write</font>"));
+                .fromHtml("<font color='#ecf0f1'>Almoayyed - write</font>"));
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(
                 this, this.getClass())
@@ -348,55 +348,84 @@ public class WriteActivity extends Activity {
         protected Void doInBackground(Void... voids) {
             //create api call here for employee list
 
-            ServiceHandler sh = new ServiceHandler();
-            String url = PreferenceManager.getDefaultSharedPreferences(
-                    WriteActivity.this).getString("MYIP",
-                    IP);
-            url = url
-                    + "/api/v1/project/getallemployees/"+PreferenceManager.getDefaultSharedPreferences(
-                    WriteActivity.this).getInt("PROJECT_CODE", 0);
-
-//            url += "?";
-//            List<NameValuePair> params = new LinkedList<NameValuePair>();
-//
-//            params.add(new BasicNameValuePair("x-access-token", PreferenceManager
-//                    .getDefaultSharedPreferences(WriteActivity.this).getString(
-//                            "TOKEN", "NULL")));
-//            params.add(new BasicNameValuePair("x-key", PreferenceManager
-//                    .getDefaultSharedPreferences(WriteActivity.this).getString(
-//                            "USERNAME", "NULL")));
-//            String paramString = URLEncodedUtils.format(params, "utf-8");
-//
-//            url += paramString;
-
-            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,WriteActivity.this.getApplicationContext());
-
-            Log.d("Response: ", "> " + jsonStr);
 
 
-            if (jsonStr != null) {
-                try {
-                    // JSONObject jsonObj = new JSONObject(jsonStr);
-
-                    // Getting JSON Array node
-                    JSONArray emp = new JSONArray(jsonStr);
-                    // worksites=new JSONArray[contacts.length()];
-                    // looping through All Contacts
-                    for (int i = 0; i < emp.length(); i++) {
-                        JSONObject c = emp.getJSONObject(i);
-                        JSONObject employ=c.getJSONObject("Employee");
-                        emplist.add(employ.getString("name"));
-                        idlist.add(Integer.toString(employ.getInt("id")));
-                        // worksites[i]=c.getJSONArray("Worksites");
 
 
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
+
+
+            DatabaseHandler db = new DatabaseHandler(WriteActivity.this);
+
+            List<EmpDetails> contacts = db.getAllContacts();
+            for(EmpDetails e:contacts)
+            {
+                emplist.add(e.getName());
+                idlist.add(e.getID());
+
             }
+            db.close();
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//            ServiceHandler sh = new ServiceHandler();
+//            String url = PreferenceManager.getDefaultSharedPreferences(
+//                    WriteActivity.this).getString("MYIP",
+//                    IP);
+//            url = url
+//                    + "/api/v1/project/getallemployees/"+PreferenceManager.getDefaultSharedPreferences(
+//                    WriteActivity.this).getInt("PROJECT_CODE", 0);
+//
+////            url += "?";
+////            List<NameValuePair> params = new LinkedList<NameValuePair>();
+////
+////            params.add(new BasicNameValuePair("x-access-token", PreferenceManager
+////                    .getDefaultSharedPreferences(WriteActivity.this).getString(
+////                            "TOKEN", "NULL")));
+////            params.add(new BasicNameValuePair("x-key", PreferenceManager
+////                    .getDefaultSharedPreferences(WriteActivity.this).getString(
+////                            "USERNAME", "NULL")));
+////            String paramString = URLEncodedUtils.format(params, "utf-8");
+////
+////            url += paramString;
+//
+//            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,WriteActivity.this.getApplicationContext());
+//
+//            Log.d("Response: ", "> " + jsonStr);
+//
+//
+//            if (jsonStr != null) {
+//                try {
+//                    // JSONObject jsonObj = new JSONObject(jsonStr);
+//
+//                    // Getting JSON Array node
+//                    JSONArray emp = new JSONArray(jsonStr);
+//                    // worksites=new JSONArray[contacts.length()];
+//                    // looping through All Contacts
+//                    for (int i = 0; i < emp.length(); i++) {
+//                        JSONObject c = emp.getJSONObject(i);
+//                        JSONObject employ=c.getJSONObject("Employee");
+//                        emplist.add(employ.getString("name"));
+//                        idlist.add(Integer.toString(employ.getInt("empid")));
+//                        // worksites[i]=c.getJSONArray("Worksites");
+//
+//
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            } else {
+//                Log.e("ServiceHandler", "Couldn't get any data from the url");
+//            }
 
 
 

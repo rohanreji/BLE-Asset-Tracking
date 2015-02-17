@@ -26,7 +26,7 @@ public class ServiceHandler {
     static String response = null;
     public final static int GET = 1;
     public final static int POST = 2;
-    static String token;
+    static String token,name;
  
     public ServiceHandler() {
  
@@ -54,6 +54,7 @@ public class ServiceHandler {
             String token_pref = "TOKEN";
 
             token = PreferenceManager.getDefaultSharedPreferences(context).getString("TOKEN", "NULL");
+            name = PreferenceManager.getDefaultSharedPreferences(context).getString("USERNAME", "NULL");
 
         //    System.out.println(token);
             // http client
@@ -81,7 +82,7 @@ public class ServiceHandler {
                 HttpGet httpGet = new HttpGet(url);
                 //"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0MjQxMzgxMzIyMDl9.ZPE2nbR8Hkn-WBep3DrVMMYaSkxS65fi33HQUK-e66g"
                 httpGet.setHeader("x-access-token",token);
-                httpGet.setHeader("x-key","p1");
+                httpGet.setHeader("x-key",name);
                 httpResponse = httpClient.execute(httpGet);
 
             }
