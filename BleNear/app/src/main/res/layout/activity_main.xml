@@ -16,5 +16,17 @@
         android:textColor="#fff"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
+
         android:onClick="startService"/>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="simulate beacon!"
+        android:textColor="#fff"
+        android:id="@+id/button"
+        android:background="#2980b9"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="simulate"/>
 </RelativeLayout>

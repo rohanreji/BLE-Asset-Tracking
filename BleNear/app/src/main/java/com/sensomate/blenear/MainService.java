@@ -27,6 +27,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -81,6 +82,7 @@ public class MainService extends Service {
             longitude = gps.getLongitude();
             Log.e("Latitude: ",latitude+"");
             Log.e("Longitude: ",longitude+"");
+
             scanLeDevice(true);
         }
         else{
@@ -134,8 +136,8 @@ public class MainService extends Service {
                                     latitude = gps.getLatitude();
                                     longitude = gps.getLongitude();
                                 }
-                                Toast.makeText(getApplicationContext(), PreviousDevice + ": " + rssi, Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getApplicationContext(), "latitude :" + latitude+"longitude :" + longitude, Toast.LENGTH_SHORT).show();
+                           //     Toast.makeText(getApplicationContext(), PreviousDevice + ": " + rssi, Toast.LENGTH_SHORT).show();
+                            //    Toast.makeText(getApplicationContext(), "latitude :" + latitude+"longitude :" + longitude, Toast.LENGTH_SHORT).show();
 
                                 sendNotification("We found you :)");
                                 api=new ApiCaller();
@@ -207,8 +209,10 @@ public class MainService extends Service {
 
 
 
-        long[] pattern = { 500, 500, 500, 500, 500, 500, 500, 500, 500 };
-        mBuilder.setVibrate(pattern);
+//        long[] pattern = { 500, 500, 500, 500, 500, 500, 500, 500, 500 };
+//        mBuilder.setVibrate(pattern);
+
+
 
 
         mBuilder.setContentIntent(contentIntent);
@@ -242,11 +246,12 @@ public class MainService extends Service {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpGet request = new HttpGet();
                 URI website = new URI("http://104.236.18.147:1337/beacons/create?lat="+latitude+"&lon="+longitude+"&beaconid=1111&recieverid=2222");
+                Log.e("hmm",website.toString());
                 request.setURI(website);
                 HttpResponse response = httpclient.execute(request);
 
                 HttpEntity entity = response.getEntity();
-                Log.e("hmm",entity.toString());
+                Log.e("haha ",entity.toString());
 
             } catch (Exception e) {
                 Log.e("ERROR IN LOGIN", e.getMessage());
