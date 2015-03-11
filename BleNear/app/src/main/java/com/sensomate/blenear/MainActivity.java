@@ -26,24 +26,24 @@ public class MainActivity extends ActionBarActivity {
         HelpButton = (Button)findViewById(R.id.helpme_button);
         if(isMyServiceRunning(MainService.class))
         {
-            HelpButton.setText("Stop Following");
+            HelpButton.setText("Stop");
         }
         else
         {
-            HelpButton.setText("Help me!");
+            HelpButton.setText("Start");
         }
     }
 
 
    public void startService(View v)
    {
-       if(HelpButton.getText().toString().equals("Help me!")) {
+       if(HelpButton.getText().toString().equals("Start")) {
            startService(new Intent(this, MainService.class));
-           HelpButton.setText("Stop Following");
+           HelpButton.setText("Stop");
        }
        else {
            stopService(new Intent(this, MainService.class));
-           HelpButton.setText("Help me!");
+           HelpButton.setText("Start");
            finish();
        }
    }
