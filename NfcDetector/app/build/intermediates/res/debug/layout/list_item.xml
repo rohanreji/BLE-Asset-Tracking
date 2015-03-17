@@ -49,4 +49,4 @@
                     android:textSize="16sp"
                    android:textAppearance="?android:attr/textAppearanceMedium" />
  
-</RelativeLayout><!-- From: file:/home/rohan/GitHub/NfcDetector/app/src/main/res/layout/list_item.xml -->
+</RelativeLayout><!-- From: file:/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/src/main/res/layout/list_item.xml -->
