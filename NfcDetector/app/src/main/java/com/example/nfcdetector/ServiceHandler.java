@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -83,6 +84,8 @@ public class ServiceHandler {
                 //"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0MjQxMzgxMzIyMDl9.ZPE2nbR8Hkn-WBep3DrVMMYaSkxS65fi33HQUK-e66g"
                 httpGet.setHeader("x-access-token",token);
                 httpGet.setHeader("x-key",name);
+                Log.e("x-access-token",token);
+                Log.e("x-key",name);
                 httpResponse = httpClient.execute(httpGet);
 
             }

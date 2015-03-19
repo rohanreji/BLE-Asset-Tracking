@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -63,12 +64,14 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.os.AsyncTask;
@@ -192,20 +195,51 @@ public class MainActivity extends Activity {
 
                 Parcelable[] rawMsgs = this.getIntent()
                         .getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                NdefMessage msg = (NdefMessage) rawMsgs[0];
-                extractMessage(msg);
+                if(rawMsgs!=null) {
+                    NdefMessage msg = (NdefMessage) rawMsgs[0];
+                    extractMessage(msg);
+                }
+                else {
+
+                    MifareClassic mifare = MifareClassic.get(tagFromIntent);
+                    try {
+                        mifare.connect();
+                        byte[] payload = mifare.readBlock(1);
+                        tagid=new String(payload, Charset.forName("US-ASCII"));
+                        t4.setText("Tag: " + tagid);
+                        t4.setTextColor(Color.parseColor("#2c3e50"));
 
 
-              //  tagid = bin2hex(tagFromIntent.getId());
-//				t4.setText("Tag: " + tagid);
-//				t4.setTextColor(Color.parseColor("#2c3e50"));
+                    } catch (IOException e) {
+                        tagid = bin2hex(tagFromIntent.getId());
+                        t4.setText("Tag: " + tagid);
+                        t4.setTextColor(Color.parseColor("#2c3e50"));
+
+                    } finally {
+                        if (mifare != null) {
+                            try {
+                                mifare.close();
+                            }
+                            catch (IOException e) {
+                                Log.e(TAG, "Error closing tag...", e);
+                            }
+                        }
+                    }
+
+
+                }
 
                 // UploadASyncTask upload = new UploadASyncTask();
                 // upload.execute();
                 // above two line or
-
-                new JedisThread().execute();
-                profilesetter();
+                if(checkInternetConnection()) {
+                    new JedisThread().execute();
+                    profilesetter();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"check network", Toast.LENGTH_LONG).show();
+                }
 
             }
         }
@@ -265,15 +299,29 @@ public class MainActivity extends Activity {
 
     private void write(String text, Tag tag) throws IOException, FormatException {
 
-        NdefRecord[] records = {createRecord(text)};
-        NdefMessage message = new NdefMessage(records);
+//        NdefRecord[] records = {createRecord(text)};
+//        NdefMessage message = new NdefMessage(records);
+//
+//        Ndef ndef = Ndef.get(tag);
+//        if (ndef == null)
+//            Toast.makeText(getApplicationContext(), "errorsfsf", Toast.LENGTH_SHORT).show();
+//        ndef.connect();
+//        ndef.writeNdefMessage(message);
+//        ndef.close();
+        try {
+            MifareClassic ultralight = MifareClassic.get(tag);
 
-        Ndef ndef = Ndef.get(tag);
-        if (ndef == null)
-            Toast.makeText(getApplicationContext(), "errorsfsf", Toast.LENGTH_SHORT).show();
-        ndef.connect();
-        ndef.writeNdefMessage(message);
-        ndef.close();
+//        NdefRecord[] records = {createRecord(text)};
+//        NdefMessage message = new NdefMessage(records);
+//        Ndef ndef = Ndef.get(tag);
+            ultralight.connect();
+            ultralight.writeBlock(1, text.getBytes(Charset.forName("US-ASCII")));
+            ultralight.close();
+        }
+        catch(Exception e)
+        {
+
+        }
     }
 
 	/*
@@ -293,32 +341,63 @@ public class MainActivity extends Activity {
                 setContentView(R.layout.login_page);
             } else {
                 if (app_mode == 0) {
+                    try {
+                        in = intent;
 
-                    in = intent;
-
-                    Tag tagFromIntent = in.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                    Log.d(TAG, "UID: " + bin2hex(tagFromIntent.getId()));
-
-
-                    Parcelable[] rawMsgs = in
-                            .getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                    NdefMessage msg = (NdefMessage) rawMsgs[0];
-                    extractMessage(msg);
+                        Tag tagFromIntent = in.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                        Log.d(TAG, "UID: " + bin2hex(tagFromIntent.getId()));
 
 
-                  //  tagid = bin2hex(tagFromIntent.getId());
-//				t4.setText("Tag: " + tagid);
-//				t4.setTextColor(Color.parseColor("#2c3e50"));
+                        Parcelable[] rawMsgs = in
+                                .getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+                        if (rawMsgs != null) {
+                            NdefMessage msg = (NdefMessage) rawMsgs[0];
+                            extractMessage(msg);
+                        } else {
 
-                    // UploadASyncTask upload = new UploadASyncTask();
-                    // upload.execute();
+                            MifareClassic mifare = MifareClassic.get(tagFromIntent);
+                            try {
+                                mifare.connect();
+                                byte[] payload = mifare.readBlock(1);
+                                tagid = new String(payload, Charset.forName("US-ASCII"));
+                                t4.setText("Tag: " + tagid);
+                                t4.setTextColor(Color.parseColor("#2c3e50"));
 
-                    // above two line or
 
-                    new JedisThread().execute();
+                            } catch (IOException e) {
+                                tagid = bin2hex(tagFromIntent.getId());
+                                t4.setText("Tag: " + tagid);
+                                t4.setTextColor(Color.parseColor("#2c3e50"));
 
-                    profilesetter();
-                } else {
+                            } finally {
+                                if (mifare != null) {
+                                    try {
+                                        mifare.close();
+                                    } catch (IOException e) {
+                                        Log.e(TAG, "Error closing tag...", e);
+                                    }
+                                }
+                            }
+
+
+                        }
+                        // UploadASyncTask upload = new UploadASyncTask();
+                        // upload.execute();
+
+                        // above two line or
+
+                        if (checkInternetConnection()) {
+                            new JedisThread().execute();
+                            profilesetter();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "check network", Toast.LENGTH_LONG).show();
+                        }
+                    }   catch(Exception e){
+                            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                }
+
+                else {
                     Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                     Tag tagid1 = tagFromIntent;
 
@@ -591,8 +670,14 @@ public class MainActivity extends Activity {
         // UploadASyncTask upload = new UploadASyncTask();
         // upload.execute();
         // above two line or one line
-        new JedisThread().execute();
-        profilesetter();
+        if(checkInternetConnection()) {
+            new JedisThread().execute();
+            profilesetter();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"check network", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void write(View v) {
@@ -1693,10 +1778,10 @@ public class MainActivity extends Activity {
                     MainActivity.this).getString("MYIP",
                     IP);
             Log.e("projectcode",PreferenceManager.getDefaultSharedPreferences(
-                    MainActivity.this).getInt("PROJECT_CODE", 0)+"");
+                    MainActivity.this).getInt("SITE_CODES", 0)+"");
             url = url
                     + "/api/v1/project/getallemployees/"+PreferenceManager.getDefaultSharedPreferences(
-                    MainActivity.this).getInt("PROJECT_CODE", 0);
+                    MainActivity.this).getInt("SITE_CODES", 0);
 
 //            url += "?";
 //            List<NameValuePair> params = new LinkedList<NameValuePair>();
@@ -1712,6 +1797,8 @@ public class MainActivity extends Activity {
 //            url += paramString;
 
             String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,MainActivity.this.getApplicationContext());
+            Log.e("projcode",PreferenceManager.getDefaultSharedPreferences(
+                    MainActivity.this).getInt("PROJECT_CODE", 0)+"");
 
             Log.d("Response: ", "> " + jsonStr);
 
@@ -1763,6 +1850,15 @@ public class MainActivity extends Activity {
                 pDialog.dismiss();
         }
 
+    }
+    private boolean checkInternetConnection() {
+        ConnectivityManager conMgr = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);
+        if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo().isAvailable() &&    conMgr.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            System.out.println("Internet Connection Not Present");
+            return false;
+        }
     }
 
 

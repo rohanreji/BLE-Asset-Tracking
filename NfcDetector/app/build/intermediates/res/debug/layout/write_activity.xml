@@ -56,4 +56,4 @@
         android:layout_below="@+id/textView"
         android:layout_alignLeft="@+id/editText"
         android:layout_alignStart="@+id/editText" />
-</RelativeLayout><!-- From: file:/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/src/main/res/layout/write_activity.xml -->
+</RelativeLayout><!-- From: file:/home/rohan/GitHub/NfcDetector/app/src/main/res/layout/write_activity.xml -->

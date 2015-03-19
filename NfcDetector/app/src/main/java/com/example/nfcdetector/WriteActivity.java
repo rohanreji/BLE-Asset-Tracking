@@ -22,6 +22,7 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.MifareClassic;
 import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -53,6 +54,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -243,13 +245,19 @@ public class WriteActivity extends Activity {
     }
 
     private void write(String text, Tag tag) throws IOException, FormatException {
+        try {
+            MifareClassic ultralight = MifareClassic.get(tag);
 
-        NdefRecord[] records = {createRecord(text)};
-        NdefMessage message = new NdefMessage(records);
-        Ndef ndef = Ndef.get(tag);
-        ndef.connect();
-        ndef.writeNdefMessage(message);
-        ndef.close();
+//        NdefRecord[] records = {createRecord(text)};
+//        NdefMessage message = new NdefMessage(records);
+//        Ndef ndef = Ndef.get(tag);
+            ultralight.connect();
+            ultralight.writeBlock(1, text.getBytes(Charset.forName("US-ASCII")));
+            ultralight.close();
+        }
+        catch(Exception e){
+
+        }
     }
 
     static String bin2hex(byte[] data) {
