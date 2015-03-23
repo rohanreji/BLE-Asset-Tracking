@@ -106,6 +106,7 @@ public class MainActivity extends Activity {
     static String last_emp_name;
     EditText e;
     String tagid;
+    String name = " ";
     String prnam;
     Intent in;
     int del = 0;
@@ -195,17 +196,19 @@ public class MainActivity extends Activity {
 
                 Parcelable[] rawMsgs = this.getIntent()
                         .getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                if(rawMsgs!=null) {
-                    NdefMessage msg = (NdefMessage) rawMsgs[0];
-                    extractMessage(msg);
-                }
-                else {
+//                if(rawMsgs!=null) {
+//                    NdefMessage msg = (NdefMessage) rawMsgs[0];
+//                    extractMessage(msg);
+//
+//                }
+//                else {
 
                     MifareClassic mifare = MifareClassic.get(tagFromIntent);
                     try {
                         mifare.connect();
-                        byte[] payload = mifare.readBlock(1);
-                        tagid=new String(payload, Charset.forName("US-ASCII"));
+                        byte[] payload = mifare.getTag().getId();
+                   //     tagid=new String(payload, Charset.forName("US-ASCII"));
+                        tagid= bin2hex(mifare.getTag().getId());
                         t4.setText("Tag: " + tagid);
                         t4.setTextColor(Color.parseColor("#2c3e50"));
 
@@ -227,7 +230,7 @@ public class MainActivity extends Activity {
                     }
 
 
-                }
+           //     }
 
                 // UploadASyncTask upload = new UploadASyncTask();
                 // upload.execute();
@@ -350,16 +353,18 @@ public class MainActivity extends Activity {
 
                         Parcelable[] rawMsgs = in
                                 .getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                        if (rawMsgs != null) {
-                            NdefMessage msg = (NdefMessage) rawMsgs[0];
-                            extractMessage(msg);
-                        } else {
+//                        if (rawMsgs != null) {
+//                            NdefMessage msg = (NdefMessage) rawMsgs[0];
+//                            extractMessage(msg);
+//                        } else {
 
                             MifareClassic mifare = MifareClassic.get(tagFromIntent);
                             try {
                                 mifare.connect();
-                                byte[] payload = mifare.readBlock(1);
-                                tagid = new String(payload, Charset.forName("US-ASCII"));
+//                                byte[] payload = mifare.readBlock(1);
+                                byte[] payload = mifare.getTag().getId();
+                              //  tagid = new String(payload, Charset.forName("US-ASCII"));
+                                tagid=bin2hex(mifare.getTag().getId());
                                 t4.setText("Tag: " + tagid);
                                 t4.setTextColor(Color.parseColor("#2c3e50"));
 
@@ -380,7 +385,7 @@ public class MainActivity extends Activity {
                             }
 
 
-                        }
+                      //  }
                         // UploadASyncTask upload = new UploadASyncTask();
                         // upload.execute();
 
@@ -477,6 +482,8 @@ public class MainActivity extends Activity {
 //        db.addContact(new EmpDetails("702F11E9", "Jack Doe", "HQPP0093", 1, "http://www.american.edu/uploads/profiles/large/chris_palmer_profile_11.jpg"));
 //        db.addContact(new EmpDetails("C1F409E9", "Jane Elza", "HQPP0074", 1, "http://www.littleblackdressgroup.com.au/wp-content/uploads/2012/11/MA-Profile-Photo.jpg"));
 //
+
+
 
 
     }
@@ -620,7 +627,56 @@ public class MainActivity extends Activity {
     }
 
     public void profilesetter() {
-        String name = "Rohan", url = "http://organicthemes.com/demo/profile/files/2012/12/profile_img.png";
+        String url = "http://organicthemes.com/demo/profile/files/2012/12/profile_img.png";
+        if(tagid.equalsIgnoreCase("20CA5934"))
+        {
+            name="SEBY JOSEPH CHIRAMEL";
+
+        }
+        if(tagid.equalsIgnoreCase("F0A778AA"))
+        {
+            name="SAMUEL K.MATHAI";
+
+        }
+        if(tagid.equalsIgnoreCase("50A79635"))
+        {
+            name="RAMACHANDRA KURUP";
+
+        }
+        if(tagid.equalsIgnoreCase("F788FBD6"))
+        {
+            name="ANTONY W";
+
+        }
+        if(tagid.equalsIgnoreCase("D0C95934"))
+        {
+            name="JAIDEEP MANDILAKODE";
+
+        }
+        if(tagid.equalsIgnoreCase("00F309E9"))
+        {
+            name="WALID ZAIN HUSSAIN";
+
+        }
+        if(tagid.equalsIgnoreCase("F09F8134"))
+        {
+            name="SANTHOSH KUMAR";
+
+        }
+        if(tagid.equalsIgnoreCase("10A18134"))
+        {
+            name="HARI NARAYAN YADAV";
+
+        }
+        if(tagid.equalsIgnoreCase("B789FBD6"))
+        {
+            name="BISHNU DEV RAY";
+
+        }
+        else{
+            name=" ";
+        }
+
         ImageView im = (ImageView) findViewById(R.id.imageView1);
         // code for fetching the contents from the offline sqlite database
         String siteid = PreferenceManager.getDefaultSharedPreferences(
@@ -649,12 +705,12 @@ public class MainActivity extends Activity {
 		db.close();
 
 
-
-        t.setText(name);
-        t3.setText(siteid + ", " + nam);
-        t.setTextColor(Color.parseColor("#2c3e50"));
-        t3.setTextColor(Color.parseColor("#2c3e50"));
-
+        if(!nam.equals(" ")) {
+            t.setText(name);
+            t3.setText(siteid + ", " + nam);
+            t.setTextColor(Color.parseColor("#2c3e50"));
+            t3.setTextColor(Color.parseColor("#2c3e50"));
+        }
         //
         if (!url.equals(" ")) {
             //       new ImageDownloader(im).execute(url);
@@ -833,40 +889,41 @@ public class MainActivity extends Activity {
                         Log.e("server redis",JEDIS_SERVER);
                 }
 
-                System.out.println("Connecting");
-                System.out.println(JEDIS_SERVER);
-                Jedis jedis = new Jedis(JEDIS_SERVER, 6379);
+                    System.out.println("Connecting");
+                    System.out.println(JEDIS_SERVER);
+                    Jedis jedis = new Jedis(JEDIS_SERVER, 6379);
 
-                jedis.auth("sensomate_123#");
+                    jedis.auth("sensomate_123#");
 
-                TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                JSONObject location = new JSONObject();
+                    TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                    JSONObject location = new JSONObject();
 
-                location.put("uid", tagid);
-                location.put("capturedAt", System.currentTimeMillis());
-                location.put("deviceid", mngr.getDeviceId());
-                int siteid = PreferenceManager.getDefaultSharedPreferences(
-                        MainActivity.this).getInt("SITE_CODE", 0);
-               Log.e("worksiteid:",siteid+" " );
-                location.put("projcode", siteid);
-                location.put("batlevel",getBatteryLevel());
+                    location.put("uid", tagid);
+                    location.put("capturedAt", System.currentTimeMillis());
+                    location.put("deviceid", mngr.getDeviceId());
+                    int siteid = PreferenceManager.getDefaultSharedPreferences(
+                            MainActivity.this).getInt("SITE_CODE", 0);
+                    Log.e("worksiteid:", siteid + " ");
+                    location.put("projcode", siteid);
+                    location.put("batlevel", getBatteryLevel());
 
 
-                String json = "";
-                json = location.toString();
-                System.out.println("Waiting to publish");
-                // publishLatch.await();
-                System.out.println("Ready to publish, waiting one sec");
-                // Thread.sleep(1000);
-                System.out.println("publishing");
+                    String json = "";
+                    json = location.toString();
+                    System.out.println("Waiting to publish");
+                    // publishLatch.await();
+                    System.out.println("Ready to publish, waiting one sec");
+                    // Thread.sleep(1000);
+                    System.out.println("publishing");
 
-                // jsonstring here...
-                jedis.publish("sensomate_channel", json);
-                jedis.auth("sensomate_123#");
-                System.out.println("published, closing publishing connection");
-                jedis.quit();
-                System.out.println("publishing connection closed");
-                del = 1;
+                    // jsonstring here...
+                    jedis.publish("sensomate_channel", json);
+                    jedis.auth("sensomate_123#");
+                    System.out.println("published, closing publishing connection");
+                    jedis.quit();
+                    System.out.println("publishing connection closed");
+                    del = 1;
+
             } catch (Exception e) {
                 System.out.println(">>> OH NOES Pub, " + e.getMessage());
                 del = 0;
@@ -1718,9 +1775,9 @@ public class MainActivity extends Activity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
             if (del == 0) {
-                Toast.makeText(getApplicationContext(),
-                        "Cannot send check connection", Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "Cannot send scan again!", Toast.LENGTH_SHORT)
+//                        .show();
             } else
                 Toast.makeText(getApplicationContext(), "Delivered",
                         Toast.LENGTH_SHORT).show();
@@ -1804,6 +1861,7 @@ public class MainActivity extends Activity {
 
 
             if (jsonStr != null) {
+
                 try {
                     // JSONObject jsonObj = new JSONObject(jsonStr);
 
@@ -1816,13 +1874,15 @@ public class MainActivity extends Activity {
                         JSONObject employ=c.getJSONObject("Employee");
                         emplist.add(employ.getString("name"));
                         JSONObject trade=employ.getJSONObject("Trade");
-                        idlist.add(Integer.toString(employ.getInt("empid")));
+                        idlist.add((employ.getString("empid")));
+
                         // worksites[i]=c.getJSONArray("Worksites");
 
 
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.e("hello","hmm");
                 }
             } else {
                 Log.e("ServiceHandler", "Couldn't get any data from the url");
