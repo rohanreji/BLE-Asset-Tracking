@@ -125,6 +125,7 @@ testing only
             try {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpGet request = new HttpGet();
+               // URI website = new URI("http://104.236.18.147:1337/beacons/create?lat="+latitude+"&lon="+longitude+"&beaconid=1111&recieverid=2222");
                 URI website = new URI("http://104.236.18.147:1337/beacons/create?lat="+latitude+"&lon="+longitude+"&beaconid=1111&recieverid=2222");
                 Log.e("hmm", website.toString());
                 request.setURI(website);

@@ -101,7 +101,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
     protected NfcAdapter nfcAdapter;
     protected PendingIntent nfcPendingIntent;
-    String IP="http://jerseygroup.sensomate.com";
+    String IP="http://almoayyed.sensomate.com";
     static int app_mode;
     static String last_emp_name;
     EditText e;
@@ -167,23 +167,11 @@ public class MainActivity extends Activity {
             setContentView(R.layout.activity_main);
 
 
-
             first_use = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("FIRST_USE", 0);
-            Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
             if (first_use == 0) {
                 firstusecall();
             }
-            else
-            {
-                TextView location=(TextView)findViewById(R.id.location);
-                TextView project=(TextView)findViewById(R.id.project);
-                location.setTypeface(font);
-                project.setTypeface(font);
-                location.setText("Location:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("PROJECT_NAME", " "));
-                project.setText("Project:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAMES", " "));
-
-            }
-
+            Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
 
 
             t = (TextView) findViewById(R.id.textView1);
@@ -221,12 +209,6 @@ public class MainActivity extends Activity {
                         byte[] payload = mifare.getTag().getId();
                    //     tagid=new String(payload, Charset.forName("US-ASCII"));
                         tagid= bin2hex(mifare.getTag().getId());
-                        boolean auth = mifare.authenticateSectorWithKeyA(2,MifareClassic.KEY_DEFAULT);
-
-                        String block_element=bin2hex(mifare.readBlock(8));
-//                        if(mifare.readBlock(8)!=null){
-//                            tagid=block_element;
-//                        }
                         t4.setText("Tag: " + tagid);
                         t4.setTextColor(Color.parseColor("#2c3e50"));
 
@@ -273,9 +255,9 @@ public class MainActivity extends Activity {
 
         IntentFilter tagDetected = new
                 IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED); // filter for all
-        IntentFilter[] TagFilters = new IntentFilter[]{tagDetected};
+        IntentFilter[] writeTagFilters = new IntentFilter[]{tagDetected};
         nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent,
-                TagFilters, null);
+                writeTagFilters, null);
     }
 
     @SuppressLint("NewApi")
@@ -336,32 +318,12 @@ public class MainActivity extends Activity {
 //        NdefMessage message = new NdefMessage(records);
 //        Ndef ndef = Ndef.get(tag);
             ultralight.connect();
-            boolean auth = ultralight.authenticateSectorWithKeyA(2,MifareClassic.KEY_DEFAULT);
-            if(!auth){
-               //Toast.makeText(getApplicationContext(),"ok",Toast.LENGTH_SHORT).show();
-            }
-//            byte payload[]=new byte[16];
-//            int i;
-//            payload=text.getBytes(Charset.forName("US-ASCII"));
-//            if(payload.length<16){
-//                for(i=payload.length-1;i<16;i++)
-//                    payload[i]=' ';
-//            }
-
-            byte[] value  = text.getBytes(Charset.forName("US-ASCII"));
-            byte[] toWrite = new byte[MifareClassic.BLOCK_SIZE];
-
-            for (int i=0; i<MifareClassic.BLOCK_SIZE; i++) {
-                if (i < value.length) toWrite[i] = value[i];
-                else toWrite[i] = 0;
-            }
-
-            ultralight.writeBlock(8, toWrite);
+            ultralight.writeBlock(1, text.getBytes(Charset.forName("US-ASCII")));
             ultralight.close();
         }
         catch(Exception e)
         {
-            Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -399,15 +361,10 @@ public class MainActivity extends Activity {
                             MifareClassic mifare = MifareClassic.get(tagFromIntent);
                             try {
                                 mifare.connect();
-//                                byte[] payload = mifare.lock(1);
+//                                byte[] payload = mifare.readBlock(1);
                                 byte[] payload = mifare.getTag().getId();
                               //  tagid = new String(payload, Charset.forName("US-ASCII"));
                                 tagid=bin2hex(mifare.getTag().getId());
-                                boolean auth = mifare.authenticateSectorWithKeyA(2,MifareClassic.KEY_DEFAULT);
-                                String block_element=bin2hex(mifare.readBlock(8));
-//                                if(mifare.readBlock(8)!=null){
-//                                    tagid=block_element;
-//                                }
                                 t4.setText("Tag: " + tagid);
                                 t4.setTextColor(Color.parseColor("#2c3e50"));
 
@@ -1450,7 +1407,7 @@ public class MainActivity extends Activity {
 
             final Spinner s = new Spinner(MainActivity.this);
             s.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                    android.R.layout.simple_spinner_dropdown_item, Sitelist));
+                    android.R.layout.simple_spinner_dropdown_item, Sitelist2));
 
             s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -1459,9 +1416,9 @@ public class MainActivity extends Activity {
                                            int position, long arg3) {
                     // TODO Auto-generated method stub
                     // Locate the textviews in activity_main.xml
-                    Siteposition = Integer.parseInt(contactList1.get(position)
+                    Siteposition2 = Integer.parseInt(contactList2.get(position)
                             .get("location"));
-                    nam = contactList1.get(position).get("code");
+                    nam2 = contactList2.get(position).get("code");
                     System.out.println("site code in shared: "
                             + PreferenceManager.getDefaultSharedPreferences(
                             MainActivity.this).getInt("SITE_CODE", 0));
@@ -1475,7 +1432,7 @@ public class MainActivity extends Activity {
 
             AlertDialog.Builder alert = new AlertDialog.Builder(
                     MainActivity.this);
-            alert.setTitle("Select Project");
+            alert.setTitle("Select Worksite");
             alert.setView(s);
             // e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/"));
             alert.setPositiveButton("Ok",
@@ -1489,12 +1446,18 @@ public class MainActivity extends Activity {
                             PreferenceManager
                                     .getDefaultSharedPreferences(
                                             MainActivity.this).edit()
-                                    .putString("SITE_NAMES", nam).commit();
+                                    .putString("SITE_NAME", nam2).commit();
                             PreferenceManager
                                     .getDefaultSharedPreferences(
                                             MainActivity.this).edit()
-                                    .putInt("SITE_CODES", Siteposition).commit();
+                                    .putInt("SITE_CODE", Siteposition2).commit();
+                            m=new MapId();
+                            m.execute();
+
+                            //setting timeout thread for async task
+
                             dialog.cancel();
+
 
 
                         }
@@ -1511,327 +1474,6 @@ public class MainActivity extends Activity {
         }
 
     }
-
-    private class GetLocationFront extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            if((m!=null)&&(!m.isCancelled()))
-                m.cancel(true);
-            // Showing progress dialog
-            p1 = new ProgressDialog(MainActivity.this);
-            p1.setMessage("Please wait...");
-            p1.setCancelable(false);
-            p1.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            // Creating service handler class instance
-            ServiceHandler sh = new ServiceHandler();
-            contactList = new ArrayList<HashMap<String, String>>();
-            Loclist = new ArrayList<String>();
-            // String url="http://127.prayer.php";
-            String url = PreferenceManager.getDefaultSharedPreferences(
-                    MainActivity.this).getString("MYIP",
-                    IP);
-            url = url
-                    + "/api/v1/location";
-
-            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,getApplicationContext());
-            Log.d("URL: ", "> " +url.toString());
-
-            Log.d("Response: ", "> " + jsonStr);
-
-            if (jsonStr != null) {
-                try {
-                    // JSONObject jsonObj = new JSONObject(jsonStr);
-
-                    // Getting JSON Array node
-                    contacts = new JSONArray(jsonStr);
-                    // worksites=new JSONArray[contacts.length()];
-                    // looping through All Contacts
-                    for (int i = 0; i < contacts.length(); i++) {
-                        JSONObject c = contacts.getJSONObject(i);
-
-                        String id = c.getString("id");
-                        String loc = c.getString("name");
-                        // worksites[i]=c.getJSONArray("Worksites");
-
-                        System.out.println("name:  " + loc);
-
-                        // tmp hashmap for single contact
-                        HashMap<String, String> contact = new HashMap<String, String>();
-
-                        // adding each child node to HashMap key => value
-                        contact.put("id", id);
-                        contact.put("loc", loc);
-
-                        // adding contact to contact list
-                        contactList.add(contact);
-                        Loclist.add(loc);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (p1.isShowing())
-                p1.dismiss();
-            /**
-             * Updating parsed JSON data into ListView
-             * */
-
-            final Spinner s = new Spinner(MainActivity.this);
-            s.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                    android.R.layout.simple_spinner_dropdown_item, Loclist));
-
-            s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-                @Override
-                public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                           int position, long arg3) {
-                    // TODO Auto-generated method stub
-                    // Locate the textviews in activity_main.xml
-                    Locposition = Integer.parseInt(contactList.get(position)
-                            .get("id"));
-                    prnam = contactList.get(position).get("loc");
-                    // wsites=worksites[position];
-                    System.out.println("id is:" + Locposition);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> arg0) {
-                    // TODO Auto-generated method stub
-                }
-            });
-
-            AlertDialog.Builder alert = new AlertDialog.Builder(
-                    MainActivity.this);
-            alert.setTitle("Select Location");
-            alert.setView(s);
-            // e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/"));
-            alert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                            PreferenceManager
-                                    .getDefaultSharedPreferences(
-                                            MainActivity.this).edit()
-                                    .putInt("FIRST_USE", 1).commit();
-                            PreferenceManager
-                                    .getDefaultSharedPreferences(
-                                            MainActivity.this).edit()
-                                    .putInt("PROJECT_CODE", Locposition)
-                                    .commit();
-                            PreferenceManager
-                                    .getDefaultSharedPreferences(
-                                            MainActivity.this).edit()
-                                    .putString("PROJECT_NAME", prnam)
-                                    .commit();
-
-                            dialog.cancel();
-                            Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
-                            TextView location=(TextView)findViewById(R.id.location);
-                            TextView project=(TextView)findViewById(R.id.project);
-                            location.setTypeface(font);
-                            project.setTypeface(font);
-                            location.setText("Location:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("PROJECT_NAME", " "));
-                            project.setText("Project:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAMES", " "));
-                        }
-                    });
-            alert.setNegativeButton("Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                            // Canceled.
-                        }
-                    });
-            alert.show();
-
-        }
-
-    }
-
-    private class GetWorkSiteFront extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-
-            // Showing progress dialog
-            if((m!=null)&&(!m.isCancelled()))
-                m.cancel(true);
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            // Creating service handler class instance
-
-            // for an older version
-            contactList1 = new ArrayList<HashMap<String, String>>();
-            Sitelist = new ArrayList<String>();
-
-            ServiceHandler sh = new ServiceHandler();
-            String url = PreferenceManager.getDefaultSharedPreferences(
-                    MainActivity.this).getString("MYIP",
-                    IP);
-            url = url
-                    + "/api/v1/location/getallprojects/"
-                    + PreferenceManager.getDefaultSharedPreferences(
-                    MainActivity.this).getInt("PROJECT_CODE", 0);
-//            url += "?";
-//            List<NameValuePair> params = new LinkedList<NameValuePair>();
-//            Sitelist = new ArrayList<String>();
-//            params.add(new BasicNameValuePair("access_token", PreferenceManager
-//                    .getDefaultSharedPreferences(MainActivity.this).getString(
-//                            "TOKEN", "NULL")));
-//            params.add(new BasicNameValuePair("x_key", PreferenceManager
-//                    .getDefaultSharedPreferences(MainActivity.this).getString(
-//                            "USERNAME", "NULL")));
-//            String paramString = URLEncodedUtils.format(params, "utf-8");
-//
-//            url += paramString;
-
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url, ServiceHandler.GET,getApplicationContext());
-            Log.d("URL: ", "> " +url.toString());
-            Log.d("Response: ", "> " + jsonStr);
-
-            if (jsonStr != null) {
-                try {
-                    // JSONArray jsonObj = new JSONArray(jsonStr);
-
-                    // Getting JSON Array node
-                    // contacts1 = jsonObj.getJSONArray("data");
-                    contacts1 = new JSONArray(jsonStr);
-                    // looping through All Contacts
-                    for (int i = 0; i < contacts1.length(); i++) {
-                        JSONObject c = contacts1.getJSONObject(i);
-
-                        String id = c.getString("id");
-                        String loc = c.getString("name");
-                        System.out.println("name:  " + loc);
-
-                        // tmp hashmap for single contact
-                        HashMap<String, String> contact = new HashMap<String, String>();
-
-                        // adding each child node to HashMap key => value
-                        contact.put("location", id);
-                        contact.put("code", loc);
-
-                        // adding contact to contact list
-                        contactList1.add(contact);
-                        Sitelist.add(loc);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
-
-            }
-
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-
-            final Spinner s = new Spinner(MainActivity.this);
-            s.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                    android.R.layout.simple_spinner_dropdown_item, Sitelist));
-
-            s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-                @Override
-                public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                           int position, long arg3) {
-                    // TODO Auto-generated method stub
-                    // Locate the textviews in activity_main.xml
-                    Siteposition = Integer.parseInt(contactList1.get(position)
-                            .get("location"));
-                    nam = contactList1.get(position).get("code");
-                    System.out.println("site code in shared: "
-                            + PreferenceManager.getDefaultSharedPreferences(
-                            MainActivity.this).getInt("SITE_CODE", 0));
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> arg0) {
-                    // TODO Auto-generated method stub
-                }
-            });
-
-            AlertDialog.Builder alert = new AlertDialog.Builder(
-                    MainActivity.this);
-            alert.setTitle("Select Project");
-            alert.setView(s);
-            // e.setText(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("MYIP","http://ec2-54-148-0-61.us-west-2.compute.amazonaws.com:1337/"));
-            alert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                            PreferenceManager
-                                    .getDefaultSharedPreferences(
-                                            MainActivity.this).edit()
-                                    .putInt("FIRST_USE", 1).commit();
-                            PreferenceManager
-                                    .getDefaultSharedPreferences(
-                                            MainActivity.this).edit()
-                                    .putString("SITE_NAMES", nam).commit();
-                            PreferenceManager
-                                    .getDefaultSharedPreferences(
-                                            MainActivity.this).edit()
-                                    .putInt("SITE_CODES", Siteposition).commit();
-                            dialog.cancel();
-
-                            Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
-                            TextView location=(TextView)findViewById(R.id.location);
-                            TextView project=(TextView)findViewById(R.id.project);
-                            location.setTypeface(font);
-                            project.setTypeface(font);
-                            location.setText("Location:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("PROJECT_NAME", " "));
-                            project.setText("Project:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAMES", " "));
-                        }
-                    });
-            alert.setNegativeButton("Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int whichButton) {
-                            // Canceled.
-                        }
-                    });
-            alert.show();
-
-        }
-
-    }
-
-
 
     class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
@@ -1950,15 +1592,6 @@ public class MainActivity extends Activity {
                             MainActivity.this).getInt("FIRST_USE", 0);
                     if (first_use == 0) {
                         firstusecall();
-                    }
-                    else{
-                        TextView location=(TextView)findViewById(R.id.location);
-                        TextView project=(TextView)findViewById(R.id.project);
-                        location.setTypeface(font);
-                        project.setTypeface(font);
-                        location.setText("Location:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("PROJECT_NAME", " "));
-                        project.setText("Project:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAMES", " "));
-
                     }
 
                 }
@@ -2275,24 +1908,8 @@ public class MainActivity extends Activity {
             db.close();
             if (pDialog.isShowing())
                 pDialog.dismiss();
-            Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
-            TextView location=(TextView)findViewById(R.id.location);
-            TextView project=(TextView)findViewById(R.id.project);
-            location.setTypeface(font);
-            project.setTypeface(font);
-            location.setText("Location:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("PROJECT_NAME", " "));
-            project.setText("Project:\n"+PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("SITE_NAMES", " "));
-
         }
 
-    }
-
-    public void locationclick(View v){
-        new GetLocationFront().execute();
-    }
-
-    public void projectclick(View v){
-        new GetWorkSiteFront().execute();
     }
     private boolean checkInternetConnection() {
         ConnectivityManager conMgr = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);

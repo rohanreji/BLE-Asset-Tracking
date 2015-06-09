@@ -108,7 +108,7 @@ public class WriteActivity extends Activity {
         bar.setBackgroundDrawable(new ColorDrawable(Color
                 .parseColor("#34495e")));
         bar.setTitle(Html
-                .fromHtml("<font color='#ecf0f1'>Almoayyed - write</font>"));
+                .fromHtml("<font color='#ecf0f1'>Sensomate - write</font>"));
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(
                 this, this.getClass())

@@ -110,5 +110,31 @@
         android:layout_alignParentTop="true"
          />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/location"
+        android:layout_above="@+id/imageView2"
+
+        android:layout_alignParentLeft="true"
+        android:clickable="true"
+        android:onClick="locationclick"
+        android:text="Location:\n"
+        android:paddingLeft="20dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/project"
+        android:layout_above="@+id/imageView2"
+        android:layout_toRightOf="@+id/location"
+        android:layout_toEndOf="@+id/location"
+        android:layout_alignParentRight="true"
+        android:clickable="true"
+        android:onClick="projectclick"
+        android:text="Project:\n"
+        android:paddingLeft="20dp"
+        />
+
 
 </RelativeLayout>

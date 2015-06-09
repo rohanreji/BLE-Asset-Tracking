@@ -40,4 +40,4 @@
         android:onClick="login"
         android:textColor="#fff" />
 
-</RelativeLayout><!-- From: file:/home/rohan/GitHub/NfcDetector/app/src/main/res/layout/login_page.xml -->
+</RelativeLayout><!-- From: file:/home/rohan/GitHub/TEST/NfcDetector/app/src/main/res/layout/login_page.xml -->
