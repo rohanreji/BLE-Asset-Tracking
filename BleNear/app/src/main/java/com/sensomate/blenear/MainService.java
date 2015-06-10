@@ -23,6 +23,10 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -33,9 +37,11 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by rohan on 17/2/15.
@@ -49,8 +55,19 @@ public class MainService extends Service {
     private Handler mHandler;
 
     private static final int REQUEST_ENABLE_BT = 1;
-    // Stops scanning after 10 seconds.
+    // Stops scanning after 5 seconds.
     private static final long SCAN_PERIOD = 5000;
+
+    //for testing , random number
+    int a;
+    Random t;
+    //Rabbitmq message
+    String message;
+    private String EXCHANGE_NAME = "logs";
+    ConnectionFactory factory;
+    Connection connection;
+    Channel channel1;
+
     String PreviousDevice;
     int PreviousRssi;
     double latitude;
@@ -106,8 +123,17 @@ public class MainService extends Service {
 
                 }
             }, SCAN_PERIOD);
+
             mScanning = true;
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
+            t = new Random();
+            a=(20+t.nextInt())%100;
+            if(a<0)
+                a=a*-1;
+
+
+            message="[{\"name\":\"class1\",\"columns\":[\"value\",\"host\"],\"points\" : [["+a+",\"serverA\"]]}]";
+            new send1().execute(message);
+
         } else {
             mScanning = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -136,10 +162,7 @@ public class MainService extends Service {
                                     latitude = gps.getLatitude();
                                     longitude = gps.getLongitude();
                                 }
-                           //     Toast.makeText(getApplicationContext(), PreviousDevice + ": " + rssi, Toast.LENGTH_SHORT).show();
-                            //    Toast.makeText(getApplicationContext(), "latitude :" + latitude+"longitude :" + longitude, Toast.LENGTH_SHORT).show();
-
-                                sendNotification("We found you :)");
+                                //sendNotification("We found you :)");
                                 api=new ApiCaller();
                                 api.execute();
                             }
@@ -261,4 +284,69 @@ public class MainService extends Service {
         }
     }
 
+    private class send1 extends AsyncTask<String, Void, Void> {
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+        }
+
+        @Override
+        protected Void doInBackground(String... Message) {
+            try {
+
+                String tempstr = "";
+                for (int i = 0; i < Message.length; i++)
+                    tempstr += Message[i];
+                JSONArray message=new JSONArray(tempstr);
+                if (channel1 == null) {
+
+                    factory = new ConnectionFactory();
+                    factory.setHost("192.168.1.100");
+                    // my internet connection is a bit restrictive so I have use an
+                    // external server
+                    // which has RabbitMQ installed on it. So I use "setUsername"
+                    // and "setPassword"
+                    factory.setUsername("aswindevps");
+                    factory.setPassword("adps94");
+                    //factory.setVirtualHost("/");
+                    factory.setPort(5672);
+                    System.out.println("" + factory.getHost() + factory.getPort() + factory.getRequestedHeartbeat() + factory.getUsername());
+                    connection = factory.newConnection();
+                    channel1 = connection.createChannel();
+                    channel1.exchangeDeclare(EXCHANGE_NAME, "fanout");
+                }
+                else if(!channel1.isOpen()){
+                    factory = new ConnectionFactory();
+                    factory.setHost("192.168.1.100");
+                    // my internet connection is a bit restrictive so I have use an
+                    // external server
+                    // which has RabbitMQ installed on it. So I use "setUsername"
+                    // and "setPassword"
+                    factory.setUsername("aswindevps");
+                    factory.setPassword("adps94");
+                    //factory.setVirtualHost("/");
+                    factory.setPort(5672);
+                    System.out.println("" + factory.getHost() + factory.getPort() + factory.getRequestedHeartbeat() + factory.getUsername());
+                    connection = factory.newConnection();
+                    channel1 = connection.createChannel();
+                    channel1.exchangeDeclare(EXCHANGE_NAME, "fanout");
+                }
+                channel1.basicPublish(EXCHANGE_NAME, "", null,
+                        message.toString().getBytes());
+                System.out.println("\nsend message:" + tempstr);
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+
+
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+
+
+            }
+            // TODO Auto-generated method stub
+            return null;
+        }
+    }
 }

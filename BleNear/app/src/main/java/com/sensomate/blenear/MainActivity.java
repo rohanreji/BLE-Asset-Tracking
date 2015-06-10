@@ -15,13 +15,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 
 import java.net.URI;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -30,11 +36,17 @@ public class MainActivity extends ActionBarActivity {
     double longitude;
     GPSTracker gps;
     ApiCaller api;
+    private String QUEUE_NAME = "trip";
+    private String EXCHANGE_NAME = "logs";
+    ConnectionFactory factory;
+    Connection connection;
+    Channel channel,channel1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         latitude=0.0;
         longitude=0.0;
+
         setContentView(R.layout.activity_main);
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "sorry no ble in your device.", Toast.LENGTH_SHORT).show();
@@ -61,8 +73,16 @@ public class MainActivity extends ActionBarActivity {
             Log.e("Latitude: ", latitude + "");
             Log.e("Longitude: ", longitude + "");
             /* on test*/
-            api = new ApiCaller();
-            api.execute();
+//            api = new ApiCaller();
+//            api.execute();
+            Random t = new Random();
+            int a=(20+t.nextInt())%100;
+            if(a<0)
+                a=a*-1;
+
+
+            String message="[{\"name\":\"class1\",\"columns\":[\"value\",\"host\"],\"points\" : [["+a+",\"serverA\"]]}]";
+              new send1().execute(message);
         }
     }
    public void startService(View v)
@@ -140,6 +160,48 @@ testing only
                 return "sorry";
             }
             return "ok";
+        }
+    }
+
+    private class send1 extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... Message) {
+            try {
+
+                String tempstr = "";
+                for (int i = 0; i < Message.length; i++)
+                    tempstr += Message[i];
+                JSONArray message=new JSONArray(tempstr);
+                if (channel1 == null) {
+
+                    factory = new ConnectionFactory();
+                    factory.setHost("192.168.1.100");
+                    // my internet connection is a bit restrictive so I have use an
+                    // external server
+                    // which has RabbitMQ installed on it. So I use "setUsername"
+                    // and "setPassword"
+                    factory.setUsername("aswindevps");
+                    factory.setPassword("adps94");
+                    //factory.setVirtualHost("/");
+                    factory.setPort(5672);
+                    System.out.println("" + factory.getHost() + factory.getPort() + factory.getRequestedHeartbeat() + factory.getUsername());
+                    connection = factory.newConnection();
+                    channel1 = connection.createChannel();
+                    channel1.exchangeDeclare(EXCHANGE_NAME, "fanout");
+                }
+                channel1.basicPublish(EXCHANGE_NAME, "", null,
+                        message.toString().getBytes());
+                System.out.println("\nsend message:" + tempstr);
+
+
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+
+            }
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 }
