@@ -9,8 +9,6 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -30,17 +28,19 @@ import java.net.URI;
 import java.util.Random;
 
 
+@SuppressWarnings("ALL")
 public class MainActivity extends ActionBarActivity {
-    Button HelpButton;
-    double latitude;
-    double longitude;
-    GPSTracker gps;
+    private Button HelpButton;
+    private double latitude;
+    private double longitude;
+    private GPSTracker gps;
     ApiCaller api;
     private String QUEUE_NAME = "trip";
-    private String EXCHANGE_NAME = "logs";
-    ConnectionFactory factory;
-    Connection connection;
-    Channel channel,channel1;
+    private final String EXCHANGE_NAME = "logs";
+    private ConnectionFactory factory;
+    private Connection connection;
+
+    private Channel channel1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,8 +170,7 @@ testing only
             try {
 
                 String tempstr = "";
-                for (int i = 0; i < Message.length; i++)
-                    tempstr += Message[i];
+                for (String aMessage : Message) tempstr += aMessage;
                 JSONArray message=new JSONArray(tempstr);
                 if (channel1 == null) {
 

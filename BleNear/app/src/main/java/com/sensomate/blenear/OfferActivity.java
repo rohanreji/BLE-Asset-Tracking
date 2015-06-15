@@ -20,14 +20,9 @@ public class OfferActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.offer_layout);
       //  TextView t=(TextView)findViewById(R.id.address_text);
-        String DeviceAddress=new String();
+        String DeviceAddress= "";
         DeviceAddress= getIntent().getStringExtra("address");
 
-
-
-     //   t.setText(DeviceAddress);
-        Typeface font = Typeface.createFromAsset(getAssets(), "demo.otf");
-     //   t.setTypeface(font);
 
     }
 
