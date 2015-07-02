@@ -62,8 +62,8 @@ public class MainService extends Service {
     private Handler mHandler;
 
     private static final int REQUEST_ENABLE_BT = 1;
-    // Stops scanning after 10 seconds.
-    private static final long SCAN_PERIOD = 10000;
+    // Stops scanning after 60 seconds.
+    private static final long SCAN_PERIOD = 60000;
     private static final long SEND_PERIOD = 10000;
     private static final int THRESHOLD_RSSI = -90;
 
@@ -88,7 +88,7 @@ public class MainService extends Service {
     TelephonyManager mngr;
     ArrayList<String> deviceList = new ArrayList<String>();
     ArrayList<Integer> rssiList = new ArrayList<Integer>();
-    ArrayList<Integer> countList = new ArrayList<Integer>();
+
     int rssimean;
 
 
@@ -121,13 +121,13 @@ public class MainService extends Service {
             Log.e("Latitude: ",latitude+"");
             Log.e("Longitude: ",longitude+"");
             try {
-                createFileOnDevice(false);
+                createFileOnDevice(true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             scanLeDevice(true);
-            senddata();
+           // senddata();
 
         }
         else{
@@ -137,102 +137,154 @@ public class MainService extends Service {
            Toast.makeText(getApplicationContext(),"please enable gps.",Toast.LENGTH_SHORT).show();
         }
     }
-
     public void senddata(){
+        //original
 
-        Timer timer = new Timer();
 
-        timer.schedule( new TimerTask(){
-            public void run() {
-                //code for testing it without ble, replace it for production
-//                Random rnd = new Random();
-//                a=(rnd.nextInt()+1)%30;
-//                if(a<0)
-//                    a=a*-1;
-//                studentlist=new JSONObject[30];
-//                for(i=0;i<30;i++){
-//                    studentlist[i]=new JSONObject();
-//                }
+        //checks if device is not present for 5 scans
+        try {
+            a = deviceList.size();
+
+
+        }catch (Exception e){
+
+        }
+
+        try {
+            createFileOnDevice(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+                /*
+                checking
+                 */
+        a=deviceList.size();
+        studentlist=new JSONObject[a+1];
+        students = new JSONArray();
+
+
+        for(i=0;i<a;i++){
+                /*
+
+                checking end
+                 */
+            try {
+                studentlist[i]=new JSONObject();
+                studentlist[i].put("id",deviceList.get(i));
+                students.put(studentlist[i]);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.e("sudentslist",students.toString());
+        }
+
+        message="[{\"name\":\"class1\",\"columns\":[\"recieverid\",\"time\",\"value\",\"students\"],\"points\" : [["+mngr.getDeviceId()+","+System.currentTimeMillis()+","+a+",\""+students.toString().replace("\"","").replace("[","").replace("]","")+"\"]]}]";
+        new send1().execute(message);
+
+
+    }
+//    public void senddata(){
+//
+//        Timer timer = new Timer();
+//
+//        timer.schedule( new TimerTask(){
+//            public void run() {
+//                //code for testing it without ble, replace it for production
+////                Random rnd = new Random();
+////                a=(rnd.nextInt()+1)%30;
+////                if(a<0)
+////                    a=a*-1;
+////                studentlist=new JSONObject[30];
+////                for(i=0;i<30;i++){
+////                    studentlist[i]=new JSONObject();
+////                }
+////                try {
+////                    studentlist[0].put("id","123");
+////                    studentlist[1].put("id","124");
+////                    studentlist[2].put("id","125");studentlist[3].put("id","126");
+////                    studentlist[4].put("id","127");
+////                    studentlist[5].put("id","128");
+////                    studentlist[6].put("id","129");
+////                    studentlist[7].put("id","130");studentlist[8].put("id","131");
+////                    studentlist[9].put("id","132");
+////                    studentlist[10].put("id","133");
+////                    studentlist[11].put("id","134");
+////                    studentlist[12].put("id","135");
+////                    studentlist[13].put("id","136");
+////                    studentlist[14].put("id","137");studentlist[15].put("id","138");
+////                    studentlist[16].put("id","139");
+////                    studentlist[17].put("id","140");studentlist[18].put("id","141");
+////                    studentlist[19].put("id","142");
+////                    studentlist[20].put("id","143");studentlist[21].put("id","144");
+////                    studentlist[22].put("id","145");
+////                    studentlist[23].put("id","146");
+////                    studentlist[24].put("id","147");studentlist[25].put("id","148");
+////                    studentlist[26].put("id","149");studentlist[27].put("id","150");
+////                    studentlist[28].put("id","151");
+////                    studentlist[29].put("id","152");
+////
+////                } catch (JSONException e) {
+////                    e.printStackTrace();
+////                }
+////                students = new JSONArray();
+////                shuffleArray(studentlist);
+////                for(i=(30-a);i<30;i++){
+////                    try {
+////                        students.put(studentlist[i].get("id"));
+////
+////                    } catch (JSONException e) {
+////                        e.printStackTrace();
+////                    }
+////                }
+//
+//                //original
+//
+//
+//                //checks if device is not present for 5 scans
 //                try {
-//                    studentlist[0].put("id","123");
-//                    studentlist[1].put("id","124");
-//                    studentlist[2].put("id","125");studentlist[3].put("id","126");
-//                    studentlist[4].put("id","127");
-//                    studentlist[5].put("id","128");
-//                    studentlist[6].put("id","129");
-//                    studentlist[7].put("id","130");studentlist[8].put("id","131");
-//                    studentlist[9].put("id","132");
-//                    studentlist[10].put("id","133");
-//                    studentlist[11].put("id","134");
-//                    studentlist[12].put("id","135");
-//                    studentlist[13].put("id","136");
-//                    studentlist[14].put("id","137");studentlist[15].put("id","138");
-//                    studentlist[16].put("id","139");
-//                    studentlist[17].put("id","140");studentlist[18].put("id","141");
-//                    studentlist[19].put("id","142");
-//                    studentlist[20].put("id","143");studentlist[21].put("id","144");
-//                    studentlist[22].put("id","145");
-//                    studentlist[23].put("id","146");
-//                    studentlist[24].put("id","147");studentlist[25].put("id","148");
-//                    studentlist[26].put("id","149");studentlist[27].put("id","150");
-//                    studentlist[28].put("id","151");
-//                    studentlist[29].put("id","152");
+//                    a = deviceList.size();
+//
+//
+//                }catch (Exception e){
+//
+//                }
+//
+//                try {
+//                    createFileOnDevice(true);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                /*
+//                checking
+//                 */
+//            a=deviceList.size();
+//            studentlist=new JSONObject[a+1];
+//            students = new JSONArray();
+//
+//
+//            for(i=0;i<a;i++){
+//                /*
+//
+//                checking end
+//                 */
+//                try {
+//                    studentlist[i]=new JSONObject();
+//                    studentlist[i].put("id",deviceList.get(i));
+//                    students.put(studentlist[i]);
 //
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
-//                students = new JSONArray();
-//                shuffleArray(studentlist);
-//                for(i=(30-a);i<30;i++){
-//                    try {
-//                        students.put(studentlist[i].get("id"));
+//                Log.e("sudentslist",students.toString());
+//            }
 //
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-
-                //original
-
-
-                //checks if device is not present for 5 scans
-                a=deviceList.size();
-
-                for(i=0;i<a;i++){
-                    if(countList.get(i)>=2){
-                        deviceList.remove(i);
-                        rssiList.remove(i);
-                        countList.remove(i);
-                        a=deviceList.size();
-                    }
-                    else{
-                        countList.set(i,countList.get(i)+1);
-                    }
-
-                }
-
-            a=deviceList.size();
-            studentlist=new JSONObject[a];
-            students = new JSONArray();
-            for(i=0;i<a;i++){
-                try {
-                    studentlist[i]=new JSONObject();
-                    studentlist[i].put("id",deviceList.get(i));
-                    students.put(studentlist[i]);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Log.e("sudentslist",students.toString());
-            }
-
-
-                message="[{\"name\":\"class1\",\"columns\":[\"recieverid\",\"time\",\"value\",\"students\"],\"points\" : [["+mngr.getDeviceId()+","+System.currentTimeMillis()+","+a+",\""+students.toString().replace("\"","").replace("[","").replace("]","")+"\"]]}]";
-                new send1().execute(message);
-                senddata();
-            }
-        }, SEND_PERIOD);
-    }
+//                  message="[{\"name\":\"class1\",\"columns\":[\"recieverid\",\"time\",\"value\",\"students\"],\"points\" : [["+mngr.getDeviceId()+","+System.currentTimeMillis()+","+a+",\""+students.toString().replace("\"","").replace("[","").replace("]","")+"\"]]}]";
+//                new send1().execute(message);
+//                senddata();
+//            }
+//        }, SEND_PERIOD);
+//    }
 
     private void scanLeDevice(final boolean enable) {
         if (enable) {
@@ -242,7 +294,8 @@ public class MainService extends Service {
                 public void run() {
                     mScanning = false;
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    scanLeDevice(true);
+                    senddata();
+
 
                 }
             }, SCAN_PERIOD);
@@ -277,6 +330,10 @@ public class MainService extends Service {
                     out.write(deviceList.get(i)+" ,rssi: "+rssiList.get(i)+"\n");
 
                 }
+                if(a==0){
+                    out.write("No devices");
+                }
+                out.write("\n\n");
                 out.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -290,19 +347,6 @@ public class MainService extends Service {
         }
     }
 
-    public void writeToFile(String message) {
-        try {
-            a=deviceList.size();
-
-            for(i=0;i<a;i++){
-                out.write(deviceList.get(i)+" ,rssi: "+rssiList.get(i)+"\n");
-
-            }
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     //code for testing it without ble, replace it for production
     static void shuffleArray(JSONObject[] ar)
     {
@@ -363,7 +407,7 @@ Code for BLE NEAR
                     {
                         deviceList.add(device.toString());
                         rssiList.add(rssi);
-                        countList.add(0);
+
                         a++;
                     }
                     else
@@ -378,16 +422,16 @@ Code for BLE NEAR
                             {
                                 rssimean=(rssiList.get(y)+rssi)/2;
 
-                                if(rssimean<THRESHOLD_RSSI) {
+                                if(rssi<THRESHOLD_RSSI) {
                                     deviceList.remove(y);
                                     rssiList.remove(y);
-                                    countList.remove(y);
+
                                     Log.e("rssi:","  "+rssi+" ");
                                     Log.e("size removed ",deviceList.size()+" ");
                                 }
                                 else {
                                     rssiList.set(y, rssimean);
-                                    countList.set(y,0);
+
                                     Log.e("rssi:","  "+rssi+" ");
                                     Log.e("rssimean:","  "+rssimean+" ");
                                     Log.e("size ",deviceList.size()+" ");
@@ -410,11 +454,7 @@ Code for BLE NEAR
 
 
 
-                    try {
-                        createFileOnDevice(true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
 
                 }
             };
@@ -432,6 +472,14 @@ Code for BLE NEAR
         PreviousDevice="";
         PreviousRssi=-500;
         Toast.makeText(this, "finished.", Toast.LENGTH_LONG).show();
+        try {
+
+                channel1.close();
+                Log.e("channel1","closed the channel");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("channel1","cannot close the channel");
+        }
     }
 
     private void sendNotification(String msg) {
@@ -516,6 +564,10 @@ Code for BLE NEAR
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            deviceList = new ArrayList<String>();
+            rssiList = new ArrayList<Integer>();
+
+            scanLeDevice(true);
 
         }
 
@@ -564,6 +616,7 @@ Code for BLE NEAR
             } catch (Exception e) {
                 // TODO: handle exception
                 e.printStackTrace();
+
 
 
 

@@ -48,6 +48,7 @@ public class MainActivity extends ActionBarActivity {
         longitude=0.0;
 
         setContentView(R.layout.activity_main);
+
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, "sorry no ble in your device.", Toast.LENGTH_SHORT).show();
             finish();
@@ -60,6 +61,9 @@ public class MainActivity extends ActionBarActivity {
         else
         {
             HelpButton.setText("Start");
+            startService(new Intent(this, MainService.class));
+            HelpButton.setText("Stop");
+            Log.e("helo","hi");
         }
     }
 
