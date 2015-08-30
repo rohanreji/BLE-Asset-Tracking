@@ -13,6 +13,8 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -90,7 +92,7 @@ public class MainService extends Service {
     ArrayList<Integer> rssiList = new ArrayList<Integer>();
 
     int rssimean;
-
+    ConnectionDetector cd;
 
     //writting log to file for testing
     public static BufferedWriter out;
@@ -109,6 +111,7 @@ public class MainService extends Service {
         PreviousRssi=-500;
         latitude=0.0;
         longitude=0.0;
+        cd = new ConnectionDetector(getApplicationContext());
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -625,4 +628,29 @@ Code for BLE NEAR
             return null;
         }
     }
+    public class ConnectionDetector {
+
+        private Context _context;
+
+        public ConnectionDetector(Context context){
+            this._context = context;
+        }
+
+        public boolean isConnectingToInternet(){
+            ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivity != null)
+            {
+                NetworkInfo[] info = connectivity.getAllNetworkInfo();
+                if (info != null)
+                    for (int i = 0; i < info.length; i++)
+                        if (info[i].getState() == NetworkInfo.State.CONNECTED)
+                        {
+                            return true;
+                        }
+
+            }
+            return false;
+        }
+    }
 }
+

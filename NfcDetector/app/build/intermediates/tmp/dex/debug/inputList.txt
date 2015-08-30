@@ -1,5 +1,5 @@
-/home/rohan/GitHub/TEST/NfcDetector/app/build/intermediates/classes/debug
-/home/rohan/GitHub/TEST/NfcDetector/app/build/intermediates/pre-dexed/debug/ndeftools-1.2.3-d317213f1c25e53f7221982051166a6982c53e16.jar
-/home/rohan/GitHub/TEST/NfcDetector/app/build/intermediates/pre-dexed/debug/volley-8372cdb23301acc81fd8628772f4b2d45691da98.jar
-/home/rohan/GitHub/TEST/NfcDetector/app/build/intermediates/pre-dexed/debug/jedis-2.0.0-3b1f875f1337045b9d7a092bfcfc27e7f8b07a1d.jar
-/home/rohan/GitHub/TEST/NfcDetector/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-bb25de6fab2dcf5fd754e0fb19ed838d2f10994d.jar
+/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/build/intermediates/classes/debug
+/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/build/intermediates/pre-dexed/debug/ndeftools-1.2.3-c1600588b1fc58f90a3321742682807ef2e0e2a0.jar
+/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/build/intermediates/pre-dexed/debug/volley-28d8c320b56b400bde2dd29c1cb37fddf19ab664.jar
+/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/build/intermediates/pre-dexed/debug/jedis-2.0.0-0448b77fedcfbfe7a935f079b1f2e74169bb9193.jar
+/home/rohan/GitHub/BLE-Asset-Tracking/NfcDetector/app/build/intermediates/pre-dexed/debug/support-v4-19.1.0-bb25de6fab2dcf5fd754e0fb19ed838d2f10994d.jar
